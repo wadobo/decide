@@ -41,7 +41,9 @@ La aplicación se compondrá de diferentes módulos básicos:
    autenticación de django.
 
  * Mixnet, generación de claves de votación y sincronización entre
-   servidores para hacer un recuento. https://verificatum.com/files/vmnv-3.0.2.pdf
+   servidores para hacer un recuento.
+    * https://verificatum.com/files/vmnv-3.0.2.pdf
+    * https://github.com/danigm/avmixnet
 
  * Recuento, una vez obtenido el recuento en texto plano, con los datos
    anonimizados, se muestran los datos sobre la votación.
@@ -49,63 +51,71 @@ La aplicación se compondrá de diferentes módulos básicos:
 Puntos de extensión
 ===================
 
+Cada tarea está etiquetada según dificultad como:
+ * Fácil (F)
+ * Media (M)
+ * Avanzada (A)
+
  * API:
-    * Versionar la API
-    * Autenticación entre servidores con token
+    * Versionar la API (F)
+    * Autenticación entre servidores con token (M)
 
  * Censo; Permitir autenticar de diferentes formas:
-    * Autenticación por email
-    * Autenticación por certificado digital
-    * Autenticación con redes sociales
-    * Autenticación LDAP externo
+    * Autenticación por email (F)
+    * Autenticación por certificado digital (A)
+    * Autenticación con redes sociales (M)
+    * Autenticación LDAP externo (M)
 
  * Tipo de votación:
-    * Votación Sí/No
-    * Varias preguntas en la misma votación
-    * Votación por preferencia, definir una ordenación
+    * Votación Sí/No (M)
+    * Varias preguntas en la misma votación (M)
+    * Votación por preferencia, definir una ordenación (M)
 
  * Cifrado:
-    * Optimizar cifrado, hacerlo multiproceso
-    * Implementar las pruebas de cero conocimiento (difícil)
+    * Optimizar cifrado, hacerlo multiproceso (M)
+    * Implementar las pruebas de cero conocimiento (A)
     * Estudiar otros métodos de anonimización, otras mixnet con otros tipos
-      de cifrado
+      de cifrado (A)
 
  * Tests:
-    * Implementar tests completos, mejorar la cobertura de código
-    * Implementar pruebas de rendimiento y benchmarks
+    * Implementar tests completos, mejorar la cobertura de código (M)
+    * Implementar pruebas de rendimiento y benchmarks (M)
 
  * Despliegue:
-    * Definir scripts de despliegue automático con ansible
-    * Definir despliegue con docker para desarrollo y producción
+    * Definir scripts de despliegue automático con ansible (M)
+    * Definir despliegue con docker para desarrollo y producción (M)
 
  * Documentación:
-    * Completar documentación de API
-    * Completar documentación de todas las clases y funciones
+    * Completar documentación de API (F)
+    * Completar documentación de todas las clases y funciones (F)
 
  * Traducciones:
-    * Hacer la interfaz traducible
-    * Traducir la interfaz al español
-    * Traducir la interfaz a otros idiomas
+    * Hacer la interfaz traducible (M)
+    * Traducir la interfaz al español (F)
+    * Traducir la interfaz a otros idiomas (F)
 
  * Interfaz
     * Implementar una interfaz mejorada con tecnología javascript moderna,
-      React, angular, etc.
+      React, angular, etc. (M)
     * Estudiar la usabilidad y definir una nueva interfaz usable, con
-      componentes css.
-    * Hacer la interfaz responsive, para que funcione en móviles.
-    * Implementar un cliente de escritorio, Gtk+, Qt, etc.
-    * Implementar clientes móviles, android, iphone, etc.
+      componentes css. (M)
+    * Hacer la interfaz responsive, para que funcione en móviles. (M)
+    * Implementar un cliente de escritorio, Gtk+, Qt, etc. (M)
+    * Implementar clientes móviles, android, iphone, etc. (M)
 
  * Postprocesado de votos:
     * Aplicar diferentes filtros sobre los resultados, aplicar condiciones,
-      ponderaciones, paridad, etc
-    * Estadísticas de votos, pintado de gráficas y estudio de datos
+      ponderaciones, paridad, etc (F)
+    * Estadísticas de votos, pintado de gráficas y estudio de datos (F)
 
  * Meta-información:
     * Mostrar información relevante en tiempo real, como el número de
       votos, porcentaje del censo, estadísticas de votantes, según
-      perfiles, etc.
+      perfiles, etc. (F)
 
  * Seguridad:
-    * Firmado y comprobación de código (tanto cliente como servidor)
-    * Protección contra ataques ddos
+    * Firmado y comprobación de código (tanto cliente como servidor) (A)
+    * Protección contra ataques ddos (A)
+    * Hacer todo el proceso distribuido para eliminar el punto único de
+      fallo, censo distribuido, votos almacenados distribuidos y sólo
+      se podrán en común para el recuento. (A)
