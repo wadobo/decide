@@ -47,6 +47,12 @@ class Mixnet(models.Model):
         return "Voting: {}, Auths: {}\nPubKey: {}".format(self.voting_id,
                                                           auths, self.pubkey)
 
+    def shuffle(self, msgs, pk):
+        crypt = MixCrypt(bits=B)
+        k = crypt.setk(self.key.p, self.key.g, self.key.y, self.key.x)
+
+        return crypt.shuffle(msgs, pk)
+
     def gen_key(self, p=0, g=0):
         crypt = MixCrypt(bits=B)
         if self.key:
