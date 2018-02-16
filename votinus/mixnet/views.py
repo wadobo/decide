@@ -1,10 +1,12 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .serializers import MixnetSerializer, KeySerializer, AuthSerializer
 from .models import Auth, Mixnet, Key
 
 from django.conf import settings
+from django.shortcuts import get_object_or_404
 
 
 # GEN_KEY ID, [AUTHS], k.p, k.g
@@ -65,3 +67,35 @@ class MixnetViewSet(viewsets.ModelViewSet):
         mn.save()
 
         return  Response(KeySerializer(pubkey, many=False).data)
+
+
+class Shuffle(APIView):
+
+    def post(self, request, voting_id):
+        """
+         * voting: id
+         * msgs: [ [int, int] ]
+         * pk: { "p": int, "g": int, "y": int } / nullable
+        """
+
+        mn = get_object_or_404(Mixnet, voting_id=voting_id)
+
+        msgs = request.data.get("msgs", [])
+        pk = request.data.get("pk", None)
+        if pk:
+            p, g, y = pk["p"], pk["g"], pk["y"]
+        else:
+            p, g, y = mn.key.p, mn.key.g, mn.key.y
+
+        msgs = mn.shuffle(msgs, (p, g, y))
+
+        data = {
+            "msgs": msgs,
+            "pk": { "p": p, "g": g, "y": y },
+        }
+        # chained call to the next auth to gen the key
+        resp = mn.chain_call("shuffle/{}".format(voting_id), data)
+        if resp:
+            msgs = resp
+
+        return  Response(msgs)
