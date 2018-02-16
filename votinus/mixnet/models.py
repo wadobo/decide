@@ -33,7 +33,7 @@ class Key(models.Model):
 
 
 class Mixnet(models.Model):
-    vote_id = models.PositiveIntegerField()
+    voting_id = models.PositiveIntegerField()
     auths = models.ManyToManyField(Auth, related_name="mixnets")
     key = models.ForeignKey(Key, blank=True, null=True,
                             related_name="mixnets",
@@ -44,8 +44,8 @@ class Mixnet(models.Model):
 
     def __str__(self):
         auths = ", ".join(a.name for a in self.auths.all())
-        return "Vote: {}, Auths: {}\nPubKey: {}".format(self.vote_id,
-                                                        auths, self.pubkey)
+        return "Voting: {}, Auths: {}\nPubKey: {}".format(self.voting_id,
+                                                          auths, self.pubkey)
 
     def gen_key(self, p=0, g=0):
         crypt = MixCrypt(bits=B)
@@ -72,7 +72,7 @@ class Mixnet(models.Model):
         next_auths = self.auths.filter(me=False)
         data.update({
             "auths": AuthSerializer(next_auths, many=True).data,
-            "vote": self.vote_id,
+            "voting": self.voting_id,
         })
 
         if next_auths:
