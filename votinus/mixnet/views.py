@@ -48,7 +48,6 @@ class MixnetViewSet(viewsets.ModelViewSet):
 
         for a in dbauths:
             mn.auths.add(a)
-        mn.save()
 
         mn.gen_key(p, g)
 
