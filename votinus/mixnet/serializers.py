@@ -21,4 +21,4 @@ class MixnetSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Mixnet
-        fields = ('vote_id', 'auths', 'pubkey')
+        fields = ('voting_id', 'auths', 'pubkey')

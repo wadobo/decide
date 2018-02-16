@@ -24,12 +24,12 @@ class MixnetViewSet(viewsets.ModelViewSet):
         This create a new mixnet and public key
 
          * auths: [ {"name": str, "url": str} ]
-         * vote: id
+         * voting: id
          * key: { "p": int, "g": int } / nullable
         """
 
         auths = request.data.get("auths")
-        vote = request.data.get("vote")
+        voting = request.data.get("voting")
         key = request.data.get("key", {"p": 0, "g": 0})
         p, g = int(key["p"]), int(key["g"])
 
@@ -42,8 +42,8 @@ class MixnetViewSet(viewsets.ModelViewSet):
             dbauths.append(a)
 
         # TODO: avoid the creation of multiple Mixnets with the same
-        # vote_id
-        mn = Mixnet(vote_id=vote)
+        # voting_id
+        mn = Mixnet(voting_id=voting)
         mn.save()
 
         for a in dbauths:
