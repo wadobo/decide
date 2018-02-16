@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Auth, Key, Mixnet
+
+
+admin.site.register(Auth)
+admin.site.register(Key)
+admin.site.register(Mixnet)
