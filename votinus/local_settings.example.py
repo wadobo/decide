@@ -22,3 +22,5 @@ APIS = {
     'visualizer': 'http://localhost:8000/',
     'voting': 'http://localhost:8000/',
 }
+
+BASEURL = 'http://localhost:8000'

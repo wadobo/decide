@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
 ]
 
 MODULES = [
@@ -50,6 +51,8 @@ MODULES = [
     'visualizer',
     'voting',
 ]
+
+BASEURL = 'http://localhost:8000'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -135,3 +138,6 @@ try:
     from local_settings import *
 except ImportError:
     print("local_settings.py not found")
+
+
+INSTALLED_APPS = INSTALLED_APPS + MODULES
