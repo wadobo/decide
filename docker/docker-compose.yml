@@ -1,0 +1,40 @@
+version: '3.4'
+
+services:
+  db:
+    restart: always
+    container_name: votinus_db
+    image: postgres:alpine
+    volumes:
+      - db:/var/lib/postgresql/data
+  web:
+    restart: always
+    container_name: votinus_web
+    image: votinus_web:latest
+    build: .
+    command: ash -c "python manage.py migrate && gunicorn -w 5 votinus.wsgi --timeout=500 -b 0.0.0.0:5000"
+    expose:
+      - "5000"
+    volumes:
+      - static:/app/static
+    depends_on:
+      - db
+  nginx:
+    restart: always
+    container_name: votinus_nginx
+    image: votinus_nginx:latest
+    build:
+        context: .
+        dockerfile: Dockerfile-nginx
+    volumes:
+      - static:/app/static
+    ports:
+      - "8000:80"
+    depends_on:
+      - web
+
+volumes:
+  static:
+    name: votinus_static
+  db:
+    name: votinus_db
