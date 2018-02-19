@@ -73,7 +73,7 @@ class Shuffle(APIView):
 
     def post(self, request, voting_id):
         """
-         * voting: id
+         * voting_id: id
          * msgs: [ [int, int] ]
          * pk: { "p": int, "g": int, "y": int } / nullable
         """
