@@ -99,3 +99,41 @@ class Shuffle(APIView):
             msgs = resp
 
         return  Response(msgs)
+
+
+class Decrypt(APIView):
+
+    def post(self, request, voting_id):
+        """
+         * voting_id: id
+         * msgs: [ [int, int] ]
+         * pk: { "p": int, "g": int, "y": int } / nullable
+        """
+
+        mn = get_object_or_404(Mixnet, voting_id=voting_id)
+
+        msgs = request.data.get("msgs", [])
+        pk = request.data.get("pk", None)
+        if pk:
+            p, g, y = pk["p"], pk["g"], pk["y"]
+        else:
+            p, g, y = mn.key.p, mn.key.g, mn.key.y
+
+        next_auths = mn.auths.filter(me=False)
+        last = next_auths.count() == 0
+
+        # useful for tests only, to override the last value
+        last = request.data.get("force-last", last)
+
+        msgs = mn.decrypt(msgs, (p, g, y), last=last)
+
+        data = {
+            "msgs": msgs,
+            "pk": { "p": p, "g": g, "y": y },
+        }
+        # chained call to the next auth to gen the key
+        resp = mn.chain_call("decrypt/{}".format(voting_id), data)
+        if resp:
+            msgs = resp
+
+        return  Response(msgs)
