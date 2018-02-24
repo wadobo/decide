@@ -1,3 +1,14 @@
 from django.db import models
 
-# Create your models here.
+
+class Vote(models.Model):
+    voting_id = models.PositiveIntegerField()
+    voter_id = models.PositiveIntegerField()
+
+    a = models.PositiveIntegerField()
+    b = models.PositiveIntegerField()
+
+    voted = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '{}: {}'.format(voting_id, voter_id)
