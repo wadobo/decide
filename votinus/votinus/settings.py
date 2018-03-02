@@ -46,7 +46,7 @@ MODULES = [
     'booth',
     'census',
     'mixnet',
-    'post_processed',
+    'postproc',
     'store',
     'visualizer',
     'voting',
