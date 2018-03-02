@@ -5,6 +5,8 @@ from django.contrib.postgres.fields import JSONField
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from django.conf import settings
+
 from mixnet.models import Auth, Key
 
 
@@ -26,7 +28,7 @@ class QuestionOption(models.Model):
         return super().save()
 
     def __str__(self):
-        return '{} ({}): {}'.format(self.question.desc, self.number, self.option)
+        return '{} ({})'.format(self.option, self.number)
 
 
 class Voting(models.Model):
@@ -58,6 +60,38 @@ class Voting(models.Model):
         pk = Key(p=key["p"], g=key["g"], y=key["y"])
         pk.save()
         self.pub_key = pk
+        self.save()
+
+    def get_votes(self):
+        STORE = settings.APIS.get('store', settings.BASEURL)
+        # gettings votes from store
+        response = requests.get('{}/store/?voting_id={}'.format(STORE, self.id))
+        votes = response.json()
+        # anon votes
+        return [[i['a'], i['b']] for i in votes]
+
+    def tally_votes(self):
+        '''
+        The tally is a shuffle and then a decrypt
+        '''
+
+        votes = self.get_votes()
+
+        auth = self.auths.first()
+        shuffle_url = "{}/mixnet/shuffle/{}/".format(auth.url, self.id)
+        decrypt_url = "{}/mixnet/decrypt/{}/".format(auth.url, self.id)
+        auths = [{"name": a.name, "url": a.url} for a in self.auths.all()]
+
+        # first, we do the shuffle
+        data = { "msgs": votes }
+        resp = requests.post(shuffle_url, json=data)
+        shuffled = resp.json()
+        # then, we can decrypt that
+        data = { "msgs": shuffled }
+        response = requests.post(decrypt_url, json=data)
+        clear = response.json()
+
+        self.tally = clear
         self.save()
 
     def __str__(self):
