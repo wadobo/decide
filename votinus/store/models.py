@@ -11,4 +11,4 @@ class Vote(models.Model):
     voted = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return '{}: {}'.format(voting_id, voter_id)
+        return '{}: {}'.format(self.voting_id, self.voter_id)
