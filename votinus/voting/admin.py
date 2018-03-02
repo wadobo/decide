@@ -29,7 +29,8 @@ class QuestionAdmin(admin.ModelAdmin):
 
 class VotingAdmin(admin.ModelAdmin):
     list_display = ('name', 'start_date', 'end_date')
-    readonly_fields = ('start_date', 'end_date', 'pub_key')
+    readonly_fields = ('start_date', 'end_date', 'pub_key',
+                       'tally', 'postproc')
 
     actions = [ start, stop ]
 

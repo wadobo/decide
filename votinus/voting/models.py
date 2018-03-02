@@ -1,6 +1,7 @@
 import requests
 
 from django.db import models
+from django.contrib.postgres.fields import JSONField
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -38,6 +39,9 @@ class Voting(models.Model):
 
     pub_key = models.OneToOneField(Key, related_name='voting', blank=True, null=True, on_delete=models.SET_NULL)
     auths = models.ManyToManyField(Auth, related_name='votings')
+
+    tally = JSONField(blank=True, null=True)
+    postproc = JSONField(blank=True, null=True)
 
     def create_pubkey(self):
         if self.pub_key or not self.auths.count():
