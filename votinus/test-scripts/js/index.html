@@ -1,0 +1,43 @@
+<!--
+    ElGamal encryption example, simplify of the code in agora-gui-booth
+    https://github.com/agoravoting/agora-gui-booth
+-->
+
+<html>
+
+<head>
+</head>
+
+<body>
+    msg: <span id="msg"></span> <br/>
+    pk: <span id="pk"></span> <br/>
+    encrypt: <span id="encrypt"></span>
+
+    <!-- needed to generate big random -->
+    <script src="crypto/sjcl.js"></script>
+
+    <!-- Big integer -->
+    <script src="crypto/jsbn.js"></script>
+    <script src="crypto/jsbn2.js"></script>
+    <script src="crypto/bigint.js"></script>
+
+    <!-- ElGamal encrypt -->
+    <script src="crypto/elgamal.js"></script>
+
+    <script>
+        let PK = {p: "179", g: "33", y: "120"};
+        let MSG = "23";
+
+        let bigpk = {
+            p: BigInt.fromJSONObject(PK.p),
+            g: BigInt.fromJSONObject(PK.g),
+            y: BigInt.fromJSONObject(PK.y),
+        };
+        let bigmsg = BigInt.fromJSONObject(MSG);
+        var cipher = ElGamal.encrypt(bigpk, bigmsg);
+
+        document.querySelector("#pk").innerHTML = PK.p + "," + PK.g + "," + PK.y;
+        document.querySelector("#msg").innerHTML = MSG;
+        document.querySelector("#encrypt").innerHTML = cipher.alpha.toString() + "," + cipher.beta.toString();
+    </script>
+</body>
