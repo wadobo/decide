@@ -32,6 +32,12 @@ fichero requirements.txt:
 
     pip install -r requirements.txt
 
+Tras esto tendremos que crearnos nuestra base de datos con postgres:
+
+    sudo su - postgres
+    psql -c "create user votinus with password 'votinus'"
+    psql -c "create database votinus owner votinus"
+
 Entramos en la carpeta del proyecto (cd votinus) y realizamos la primera migración para preparar la
 base de datos que utilizaremos:
 
