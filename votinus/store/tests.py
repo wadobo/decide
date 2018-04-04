@@ -6,11 +6,14 @@ from rest_framework.test import APITestCase
 from .models import Vote
 from .serializers import VoteSerializer
 
+from base import mods
+
 
 class StoreTextCase(APITestCase):
 
     def setUp(self):
         self.client = APIClient()
+        mods.mock_query(self.client)
 
     def tearDown(self):
         self.client = None

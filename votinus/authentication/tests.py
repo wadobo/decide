@@ -5,11 +5,14 @@ from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
+from base import mods
+
 
 class AuthTestCase(APITestCase):
 
     def setUp(self):
         self.client = APIClient()
+        mods.mock_query(self.client)
         u = User(username='voter1')
         u.set_password('123')
         u.save()
