@@ -55,7 +55,7 @@ class MixnetViewSet(viewsets.ModelViewSet):
 
         data = { "key": { "p": mn.key.p, "g": mn.key.g } }
         # chained call to the next auth to gen the key
-        resp = mn.chain_call("mixnet", data)
+        resp = mn.chain_call("/", data)
         if resp:
             y = (resp["y"] * mn.key.y) % mn.key.p
         else:
@@ -94,7 +94,7 @@ class Shuffle(APIView):
             "pk": { "p": p, "g": g, "y": y },
         }
         # chained call to the next auth to gen the key
-        resp = mn.chain_call("shuffle/{}".format(voting_id), data)
+        resp = mn.chain_call("/shuffle/{}/".format(voting_id), data)
         if resp:
             msgs = resp
 
@@ -132,7 +132,7 @@ class Decrypt(APIView):
             "pk": { "p": p, "g": g, "y": y },
         }
         # chained call to the next auth to gen the key
-        resp = mn.chain_call("decrypt/{}".format(voting_id), data)
+        resp = mn.chain_call("/decrypt/{}/".format(voting_id), data)
         if resp:
             msgs = resp
 

@@ -1,8 +1,8 @@
-import requests
-
 from django.db import models
 
 from .mixcrypt import MixCrypt
+
+from base import mods
 
 
 # number of bits for the key, all auths should use the same number of bits
@@ -87,9 +87,9 @@ class Mixnet(models.Model):
         })
 
         if next_auths:
-            url = "{}/{}/".format(next_auths[0].url, path)
-            resp = requests.post(url, json=data)
-            resp.json()
-            return resp.json()
+            auth = next_auths.first().url
+            r = mods.post('mixnet', method='post', entry_point=path,
+                           baseurl=auth, json=data)
+            return r
 
         return None
