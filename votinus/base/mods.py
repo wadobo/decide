@@ -57,3 +57,30 @@ def get(*args, **kwargs):
 
 def post(*args, **kwargs):
     return query(*args, method='post', **kwargs)
+
+
+def mock_query(client):
+    '''
+    Function to build a mock to override the query function in this module.
+
+    The client param should be a rest_framework.tests.APIClient
+    '''
+
+    def test_query(modname, entry_point='/', method='get', baseurl=None, **kwargs):
+        url = '/{}{}'.format(modname, entry_point)
+        params = kwargs.get('params', None)
+        if params:
+            url += '?{}'.format(urllib.parse.urlencode(params))
+
+        q = getattr(client, method)
+
+        if method == 'get':
+            response = q(url, format='json')
+        else:
+            json_data = kwargs.get('json', {})
+            response = q(url, data=json_data, format='json')
+
+        return response.json()
+
+    global query
+    query = test_query

@@ -9,11 +9,6 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 
 
-# GEN_KEY ID, [AUTHS], k.p, k.g
-# DECRYPT ID, [AUTHS], [msgs]
-# SHUFFLE ID, [AUTHS], epk, [msgs]
-
-
 class MixnetViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows mixnets to be viewed or edited.
@@ -27,12 +22,14 @@ class MixnetViewSet(viewsets.ModelViewSet):
 
          * auths: [ {"name": str, "url": str} ]
          * voting: id
+         * position: int / nullable
          * key: { "p": int, "g": int } / nullable
         """
 
         auths = request.data.get("auths")
         voting = request.data.get("voting")
         key = request.data.get("key", {"p": 0, "g": 0})
+        position = request.data.get("position", 0)
         p, g = int(key["p"]), int(key["g"])
 
         dbauths = []
@@ -43,9 +40,7 @@ class MixnetViewSet(viewsets.ModelViewSet):
                                               me=isme)
             dbauths.append(a)
 
-        # TODO: avoid the creation of multiple Mixnets with the same
-        # voting_id
-        mn = Mixnet(voting_id=voting)
+        mn = Mixnet(voting_id=voting, auth_position=position)
         mn.save()
 
         for a in dbauths:
@@ -76,9 +71,11 @@ class Shuffle(APIView):
          * voting_id: id
          * msgs: [ [int, int] ]
          * pk: { "p": int, "g": int, "y": int } / nullable
+         * position: int / nullable
         """
 
-        mn = get_object_or_404(Mixnet, voting_id=voting_id)
+        position = request.data.get("position", 0)
+        mn = get_object_or_404(Mixnet, voting_id=voting_id, auth_position=position)
 
         msgs = request.data.get("msgs", [])
         pk = request.data.get("pk", None)
@@ -108,9 +105,11 @@ class Decrypt(APIView):
          * voting_id: id
          * msgs: [ [int, int] ]
          * pk: { "p": int, "g": int, "y": int } / nullable
+         * position: int / nullable
         """
 
-        mn = get_object_or_404(Mixnet, voting_id=voting_id)
+        position = request.data.get("position", 0)
+        mn = get_object_or_404(Mixnet, voting_id=voting_id, auth_position=position)
 
         msgs = request.data.get("msgs", [])
         pk = request.data.get("pk", None)
@@ -119,7 +118,7 @@ class Decrypt(APIView):
         else:
             p, g, y = mn.key.p, mn.key.g, mn.key.y
 
-        next_auths = mn.auths.filter(me=False)
+        next_auths = mn.next_auths()
         last = next_auths.count() == 0
 
         # useful for tests only, to override the last value
