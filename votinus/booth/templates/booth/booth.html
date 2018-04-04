@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block content %}
+    <h1>{{ voting.id }} - {{ voting.name }}</h1>
+
+    <h2>{{ voting.question.desc }}</h2>
+
+    {% for opt in voting.question.options %}
+        <label for="q{{opt.number}}">
+            <input id="q{{opt.number}}" type="radio" name="question" value={{opt.number}} /> {{opt.option}}<br/>
+        </label>
+    {% endfor %}
+
+    <input type="submit" value="{% trans "Vote" %}" onClick="votinusSend()"/>
+{% endblock %}
+
+{% block extrabody %}
+    <!-- needed to generate big random -->
+    <script src="{% static "crypto/sjcl.js" %}"></script>
+
+    <!-- Big integer -->
+    <script src="{% static "crypto/jsbn.js" %}"></script>
+    <script src="{% static "crypto/jsbn2.js" %}"></script>
+    <script src="{% static "crypto/bigint.js" %}"></script>
+
+    <!-- ElGamal encrypt -->
+    <script src="{% static "crypto/elgamal.js" %}"></script>
+
+    <script>
+        var bigpk = {
+            p: BigInt.fromJSONObject("{{voting.pub_key.p}}"),
+            g: BigInt.fromJSONObject("{{voting.pub_key.g}}"),
+            y: BigInt.fromJSONObject("{{voting.pub_key.y}}"),
+        };
+
+        function postData(url, data) {
+          // Default options are marked with *
+          return fetch(url, {
+            body: JSON.stringify(data),
+            headers: {
+              'content-type': 'application/json'
+            },
+            method: 'POST',
+          })
+          .then(response => response.json())
+        }
+
+        function votinusEncrypt() {
+            var msg = document.querySelector("input[name=question]:checked").value;
+            var bigmsg = BigInt.fromJSONObject(msg);
+            var cipher = ElGamal.encrypt(bigpk, bigmsg);
+            return cipher;
+        }
+
+        function votinusSend() {
+            var v = votinusEncrypt();
+            var data = {
+                vote: {a: v.alpha.toString(), b: v.beta.toString()},
+                voting: {{voting.id}},
+                // TODO: use the login voter id
+                voter: 42,
+            }
+            postData("{{store_url}}" + "/store/", data)
+              .then(data => {
+                alert("{% trans "Conglatulations. Your vote has been sent" %}")
+                console.log(v);
+              })
+              .catch(error => {
+                alert("{% trans "Error: " %}" + error);
+                console.error(error);
+              })
+        }
+    </script>
+</body>
+{% endblock %}
