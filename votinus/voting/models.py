@@ -1,13 +1,11 @@
-import requests
-
 from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from django.conf import settings
-
 from mixnet.models import Auth, Key
+
+from base import mods
 
 
 class Question(models.Model):
@@ -50,23 +48,19 @@ class Voting(models.Model):
             return
 
         auth = self.auths.first()
-        url = "{}/mixnet/".format(auth.url)
         data = {
             "voting": self.id,
             "auths": [ {"name": a.name, "url": a.url} for a in self.auths.all() ],
         }
-        resp = requests.post(url, json=data)
-        key = resp.json()
+        key = mods.post('mixnet', baseurl=auth.url, json=data)
         pk = Key(p=key["p"], g=key["g"], y=key["y"])
         pk.save()
         self.pub_key = pk
         self.save()
 
     def get_votes(self):
-        STORE = settings.APIS.get('store', settings.BASEURL)
         # gettings votes from store
-        response = requests.get('{}/store/?voting_id={}'.format(STORE, self.id))
-        votes = response.json()
+        votes = mods.get('store', params={'voting_id': self.id})
         # anon votes
         return [[i['a'], i['b']] for i in votes]
 
@@ -78,18 +72,16 @@ class Voting(models.Model):
         votes = self.get_votes()
 
         auth = self.auths.first()
-        shuffle_url = "{}/mixnet/shuffle/{}/".format(auth.url, self.id)
-        decrypt_url = "{}/mixnet/decrypt/{}/".format(auth.url, self.id)
+        shuffle_url = "/shuffle/{}/".format(self.id)
+        decrypt_url = "/decrypt/{}/".format(self.id)
         auths = [{"name": a.name, "url": a.url} for a in self.auths.all()]
 
         # first, we do the shuffle
         data = { "msgs": votes }
-        resp = requests.post(shuffle_url, json=data)
-        shuffled = resp.json()
+        shuffled = mods.post('mixnet', entry_point=shuffle_url, baseurl=auth.url, json=data)
         # then, we can decrypt that
         data = { "msgs": shuffled }
-        response = requests.post(decrypt_url, json=data)
-        clear = response.json()
+        clear = mods.post('mixnet', entry_point=decrypt_url, baseurl=auth.url, json=data)
 
         self.tally = clear
         self.save()

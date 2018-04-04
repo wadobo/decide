@@ -1,6 +1,5 @@
 import random
 import itertools
-import requests
 
 from django.core.management.base import BaseCommand
 
@@ -9,6 +8,8 @@ from mixnet.mixcrypt import ElGamal
 
 from voting.models import Voting, Question, QuestionOption
 from mixnet.models import Auth
+
+from base import mods
 
 from django.conf import settings
 STORE = settings.APIS.get('store', settings.BASEURL)
@@ -54,7 +55,7 @@ class Command(BaseCommand):
                 }
                 clear[opt.number] += 1
                 voter += 1
-                requests.post('{}/store/'.format(STORE), json=data)
+                mods.post('store', json=data)
         return clear
 
     def handle(self, *args, **options):
