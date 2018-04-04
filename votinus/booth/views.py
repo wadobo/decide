@@ -21,5 +21,6 @@ class BoothView(TemplateView):
             raise Http404
 
         context['store_url'] = settings.APIS.get('store', settings.BASEURL)
+        context['auth_url'] = settings.APIS.get('authentication', settings.BASEURL)
 
         return context
