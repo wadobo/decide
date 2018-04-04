@@ -34,6 +34,7 @@ class Key(models.Model):
 
 class Mixnet(models.Model):
     voting_id = models.PositiveIntegerField()
+    auth_position = models.PositiveIntegerField(default=0)
     auths = models.ManyToManyField(Auth, related_name="mixnets")
     key = models.ForeignKey(Key, blank=True, null=True,
                             related_name="mixnets",
@@ -80,16 +81,26 @@ class Mixnet(models.Model):
     def chain_call(self, path, data):
         from .serializers import AuthSerializer
 
-        next_auths = self.auths.filter(me=False)
+        next_auths=self.next_auths()
+
         data.update({
             "auths": AuthSerializer(next_auths, many=True).data,
             "voting": self.voting_id,
+            "position": self.auth_position + 1,
         })
 
         if next_auths:
             auth = next_auths.first().url
-            r = mods.post('mixnet', method='post', entry_point=path,
+            r = mods.post('mixnet', entry_point=path,
                            baseurl=auth, json=data)
             return r
 
         return None
+
+    def next_auths(self):
+        next_auths = self.auths.filter(me=False)
+
+        if self.auths.count() == next_auths.count():
+            next_auths = next_auths[1:]
+
+        return next_auths
