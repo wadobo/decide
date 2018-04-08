@@ -1,4 +1,6 @@
+import datetime
 import random
+from django.utils import timezone
 from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
@@ -7,6 +9,10 @@ from .models import Vote
 from .serializers import VoteSerializer
 from base import mods
 from census.models import Census
+from mixnet.models import Auth
+from mixnet.models import Key
+from voting.models import Question
+from voting.models import Voting
 
 
 class StoreTextCase(APITestCase):
@@ -14,9 +20,22 @@ class StoreTextCase(APITestCase):
     def setUp(self):
         self.client = APIClient()
         mods.mock_query(self.client)
+        self.question = Question(desc='qwerty')
+        self.question.save()
+        self.voting = Voting(pk=5001,
+                             name='voting example',
+                             question=self.question,
+                             start_date=timezone.now(),
+        )
+        self.voting.save()
 
     def tearDown(self):
         self.client = None
+
+    def gen_voting(self, pk):
+        voting = Voting(pk=pk, name='v1', question=self.question, start_date=timezone.now(),
+                end_date=timezone.now() + datetime.timedelta(days=1))
+        voting.save()
 
     def gen_votes(self):
         votings = [random.randint(1, 5000) for i in range(10)]
@@ -24,6 +43,7 @@ class StoreTextCase(APITestCase):
         for v in votings:
             a = random.randint(2, 500)
             b = random.randint(2, 500)
+            self.gen_voting(v)
             random_user = random.choice(users)
             census = Census(voting_id=v, voter_id=random_user)
             census.save()
@@ -47,21 +67,25 @@ class StoreTextCase(APITestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_store_vote(self):
-        census = Census(voting_id=345, voter_id=1)
+        VOTING_PK = 345
+        CTE_A = 96
+        CTE_B = 184
+        census = Census(voting_id=VOTING_PK, voter_id=1)
         census.save()
+        self.gen_voting(VOTING_PK)
         data = {
-            "voting": 345,
+            "voting": VOTING_PK,
             "voter": 1,
-            "vote": { "a": 96, "b": 184 }
+            "vote": { "a": CTE_A, "b": CTE_B }
         }
         response = self.client.post('/store/', data, format='json')
         self.assertEqual(response.status_code, 200)
 
         self.assertEqual(Vote.objects.count(), 1)
-        self.assertEqual(Vote.objects.first().voting_id, 345)
+        self.assertEqual(Vote.objects.first().voting_id, VOTING_PK)
         self.assertEqual(Vote.objects.first().voter_id, 1)
-        self.assertEqual(Vote.objects.first().a, 96)
-        self.assertEqual(Vote.objects.first().b, 184)
+        self.assertEqual(Vote.objects.first().a, CTE_A)
+        self.assertEqual(Vote.objects.first().b, CTE_B)
 
     def test_vote(self):
         self.gen_votes()
@@ -103,3 +127,18 @@ class StoreTextCase(APITestCase):
         self.assertEqual(len(votes), 1)
         self.assertEqual(votes[0]["voting_id"], v)
         self.assertEqual(votes[0]["voter_id"], u)
+
+    def test_voting_closed(self):
+        data = {
+            "voting": 5001,
+            "voter": 1,
+            "vote": { "a": 30, "b": 55 }
+        }
+        census = Census(voting_id=5001, voter_id=1)
+        census.save()
+        response = self.client.post('/store/', data, format='json')
+        self.assertEqual(response.status_code, 401)
+        self.voting.end_date = timezone.now() + datetime.timedelta(days=1)
+        self.voting.save()
+        response = self.client.post('/store/', data, format='json')
+        self.assertEqual(response.status_code, 200)

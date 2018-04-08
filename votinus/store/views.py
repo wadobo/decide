@@ -1,3 +1,5 @@
+from django.utils import timezone
+from django.utils.dateparse import parse_datetime
 import django_filters.rest_framework
 from rest_framework import status
 from rest_framework.response import Response
@@ -6,6 +8,7 @@ from rest_framework import generics
 from .models import Vote
 from .serializers import VoteSerializer
 from base import mods
+
 
 class StoreView(generics.ListAPIView):
     queryset = Vote.objects.all()
@@ -21,6 +24,13 @@ class StoreView(generics.ListAPIView):
         """
 
         vid = request.data.get('voting')
+        voting = mods.get('voting', params={'id': vid})
+        if not voting:
+            return Response({}, status=status.HTTP_401_UNAUTHORIZED)
+        end_date = voting[0].get('end_date', None)
+        if not end_date or parse_datetime(end_date) < timezone.now():
+            return Response({}, status=status.HTTP_401_UNAUTHORIZED)
+
         uid = request.data.get('voter')
         vote = request.data.get('vote')
 
