@@ -5,7 +5,7 @@ from rest_framework import generics
 
 from .models import Vote
 from .serializers import VoteSerializer
-
+from base import mods
 
 class StoreView(generics.ListAPIView):
     queryset = Vote.objects.all()
@@ -27,10 +27,13 @@ class StoreView(generics.ListAPIView):
         if not vid or not uid or not vote:
             return Response({}, status=status.HTTP_400_BAD_REQUEST)
 
+        perms = mods.get('census/{}'.format(vid), params={'voter_id': uid}, response=True)
+        if perms.status_code == 401:
+            return Response({}, status=status.HTTP_401_UNAUTHORIZED)
+
         a = vote.get("a")
         b = vote.get("b")
 
-        # TODO: check permissions with census
         defs = { "a": a, "b": b }
         v, _ = Vote.objects.get_or_create(voting_id=vid, voter_id=uid,
                                           defaults=defs)

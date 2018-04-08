@@ -48,7 +48,10 @@ def query(modname, entry_point='/', method='get', baseurl=None, **kwargs):
         json_data = kwargs.get('json', {})
         response = q(url, json=json_data)
 
-    return response.json()
+    if kwargs.get('response', False):
+        return response
+    else:
+        return response.json()
 
 
 def get(*args, **kwargs):
@@ -80,7 +83,10 @@ def mock_query(client):
             json_data = kwargs.get('json', {})
             response = q(url, data=json_data, format='json')
 
-        return response.json()
+        if kwargs.get('response', False):
+            return response
+        else:
+            return response.json()
 
     global query
     query = test_query

@@ -5,8 +5,8 @@ from rest_framework.test import APITestCase
 
 from .models import Vote
 from .serializers import VoteSerializer
-
 from base import mods
+from census.models import Census
 
 
 class StoreTextCase(APITestCase):
@@ -24,22 +24,36 @@ class StoreTextCase(APITestCase):
         for v in votings:
             a = random.randint(2, 500)
             b = random.randint(2, 500)
+            random_user = random.choice(users)
+            census = Census(voting_id=v, voter_id=random_user)
+            census.save()
             data = {
                 "voting": v,
-                "voter": random.choice(users),
+                "voter": random_user,
                 "vote": { "a": a, "b": b }
             }
-            self.client.post('/store/', data, format='json')
+            response = self.client.post('/store/', data, format='json')
+            self.assertEqual(response.status_code, 200)
 
         return votings, users
 
+    def test_gen_vote_invalid(self):
+        data = {
+            "voting": 1,
+            "voter": 1,
+            "vote": { "a": 1, "b": 1 }
+        }
+        response = self.client.post('/store/', data, format='json')
+        self.assertEqual(response.status_code, 401)
+
     def test_store_vote(self):
+        census = Census(voting_id=345, voter_id=1)
+        census.save()
         data = {
             "voting": 345,
             "voter": 1,
             "vote": { "a": 96, "b": 184 }
         }
-
         response = self.client.post('/store/', data, format='json')
         self.assertEqual(response.status_code, 200)
 
