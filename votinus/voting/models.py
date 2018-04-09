@@ -86,16 +86,17 @@ class Voting(models.Model):
         self.tally = clear
         self.save()
 
-        self.postproc()
+        self.do_postproc()
 
-    def postproc(self):
+    def do_postproc(self):
         tally = self.tally
         options = self.question.options.all()
 
         opts = []
         for opt in options:
-            opts.push({
+            opts.append({
                 'option': opt.option,
+                'number': opt.number,
                 'votes': tally.count(opt.number)
             })
 
