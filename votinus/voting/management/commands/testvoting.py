@@ -1,18 +1,20 @@
 import random
 import itertools
+from django.utils import timezone
 
 from django.core.management.base import BaseCommand
+from django.contrib.auth.models import User
 
 from mixnet.mixcrypt import MixCrypt
 from mixnet.mixcrypt import ElGamal
 
 from voting.models import Voting, Question, QuestionOption
 from mixnet.models import Auth
+from census.models import Census
 
 from base import mods
 
 from django.conf import settings
-STORE = settings.APIS.get('store', settings.BASEURL)
 
 
 class Command(BaseCommand):
@@ -41,8 +43,17 @@ class Command(BaseCommand):
 
         return v
 
+    def create_voters(self, v):
+        for i in range(100):
+            u, _ = User.objects.get_or_create(username='testvoter{}'.format(i))
+            u.is_active = True
+            u.save()
+            c = Census(voter_id=u.id, voting_id=v.id)
+            c.save()
+
     def store_votes(self, v):
-        voter = 1
+        voters = list(Census.objects.filter(voting_id=v.id))
+        voter = voters.pop()
         clear = {}
         for opt in v.question.options.all():
             clear[opt.number] = 0
@@ -50,19 +61,23 @@ class Command(BaseCommand):
                 a, b = self.encrypt_msg(opt.number, v)
                 data = {
                     'voting': v.id,
-                    'voter': voter,
+                    'voter': voter.voter_id,
                     'vote': { 'a': a, 'b': b },
                 }
                 clear[opt.number] += 1
-                voter += 1
+                voter = voters.pop()
                 mods.post('store', json=data)
         return clear
 
     def handle(self, *args, **options):
         print("Creating voting")
         v = self.create_voting()
+        self.create_voters(v)
+
         print("Creating pubkey")
         v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
 
         print("Storing votes")
         clear = self.store_votes(v)
@@ -76,3 +91,8 @@ class Command(BaseCommand):
         print("Result:")
         for q in v.question.options.all():
             print(" * {}: {} tally votes / {} emitted votes".format(q, tally.get(q.number, 0), clear.get(q.number, 0)))
+
+        print("")
+        print("Postproc Result:")
+        for q in v.postproc:
+            print(" * {}: {} postproc / {} votes".format(q["option"], q["postproc"], q["votes"]))
