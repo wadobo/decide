@@ -27,8 +27,11 @@ class StoreView(generics.ListAPIView):
         voting = mods.get('voting', params={'id': vid})
         if not voting:
             return Response({}, status=status.HTTP_401_UNAUTHORIZED)
+        start_date = voting[0].get('start_date', None)
         end_date = voting[0].get('end_date', None)
-        if not end_date or parse_datetime(end_date) < timezone.now():
+        not_started = not start_date or timezone.now() < parse_datetime(start_date)
+        is_closed = end_date and parse_datetime(end_date) < timezone.now()
+        if not_started or is_closed:
             return Response({}, status=status.HTTP_401_UNAUTHORIZED)
 
         uid = request.data.get('voter')

@@ -128,7 +128,7 @@ class StoreTextCase(APITestCase):
         self.assertEqual(votes[0]["voting_id"], v)
         self.assertEqual(votes[0]["voter_id"], u)
 
-    def test_voting_closed(self):
+    def test_voting_status(self):
         data = {
             "voting": 5001,
             "voter": 1,
@@ -136,9 +136,22 @@ class StoreTextCase(APITestCase):
         }
         census = Census(voting_id=5001, voter_id=1)
         census.save()
+        # not opened
+        self.voting.start_date = timezone.now() + datetime.timedelta(days=1)
+        self.voting.save()
         response = self.client.post('/store/', data, format='json')
         self.assertEqual(response.status_code, 401)
+
+        # not closed
+        self.voting.start_date = timezone.now() - datetime.timedelta(days=1)
+        self.voting.save()
         self.voting.end_date = timezone.now() + datetime.timedelta(days=1)
         self.voting.save()
         response = self.client.post('/store/', data, format='json')
         self.assertEqual(response.status_code, 200)
+
+        # closed
+        self.voting.end_date = timezone.now() - datetime.timedelta(days=1)
+        self.voting.save()
+        response = self.client.post('/store/', data, format='json')
+        self.assertEqual(response.status_code, 401)
