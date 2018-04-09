@@ -7,6 +7,7 @@ from rest_framework.status import (
         HTTP_201_CREATED as ST_201,
         HTTP_204_NO_CONTENT as ST_204,
         HTTP_400_BAD_REQUEST as ST_400,
+        HTTP_401_UNAUTHORIZED as ST_401,
         HTTP_409_CONFLICT as ST_409
 )
 
@@ -45,5 +46,5 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
         try:
             Census.objects.get(voting_id=voting_id, voter_id=voter)
         except ObjectDoesNotExist:
-            return Response('Invalid voter')
+            return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
