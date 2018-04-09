@@ -19,6 +19,11 @@ def stop(ModelAdmin, request, queryset):
         v.save()
 
 
+def tally(ModelAdmin, request, queryset):
+    for v in queryset.filter(end_date__lt=timezone.now()):
+        v.tally_votes()
+
+
 class QuestionOptionInline(admin.TabularInline):
     model = QuestionOption
 
@@ -32,7 +37,7 @@ class VotingAdmin(admin.ModelAdmin):
     readonly_fields = ('start_date', 'end_date', 'pub_key',
                        'tally', 'postproc')
 
-    actions = [ start, stop ]
+    actions = [ start, stop, tally ]
 
 
 admin.site.register(Voting, VotingAdmin)
