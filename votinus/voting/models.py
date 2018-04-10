@@ -86,5 +86,25 @@ class Voting(models.Model):
         self.tally = clear
         self.save()
 
+        self.do_postproc()
+
+    def do_postproc(self):
+        tally = self.tally
+        options = self.question.options.all()
+
+        opts = []
+        for opt in options:
+            opts.append({
+                'option': opt.option,
+                'number': opt.number,
+                'votes': tally.count(opt.number)
+            })
+
+        data = { 'type': 'IDENTITY', 'options': opts }
+        postp = mods.post('postproc', json=data)
+
+        self.postproc = postp
+        self.save()
+
     def __str__(self):
         return self.name
