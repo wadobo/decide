@@ -136,3 +136,91 @@ class VotingTestCase(APITestCase):
 
         response = self.client.post('/voting/', data, format='json')
         self.assertEqual(response.status_code, 201)
+
+    def test_update_voting(self):
+        voting = self.create_voting()
+
+        data = {'action': 'start'}
+        #response = self.client.post('/voting/{}/'.format(voting.pk), data, format='json')
+        #self.assertEqual(response.status_code, 401)
+
+        # login with user no admin
+        data_user = {'username': 'noadmin', 'password': 'qwerty'}
+        response = mods.post('authentication/login', json=data_user, response=True)
+        self.assertEqual(response.status_code, 200)
+        token = response.json().get('token')
+        self.assertTrue(token)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        # login with user admin
+        data_user = {'username': 'admin', 'password': 'qwerty'}
+        response = mods.post('authentication/login', json=data_user, response=True)
+        self.assertEqual(response.status_code, 200)
+        token = response.json().get('token')
+        self.assertTrue(token)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        data = {'action': 'bad'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+        # STATUS VOTING: not started
+        for action in ['stop', 'tally']:
+            data = {'action': action}
+            response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+            self.assertEqual(response.status_code, 400)
+            self.assertEqual(response.json(), 'Voting is not started')
+
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting started')
+
+        # STATUS VOTING: started
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting already started')
+
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting is not stopped')
+
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting stopped')
+
+        # STATUS VOTING: stopped
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting already started')
+
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting already stopped')
+
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), 'Voting tallied')
+
+        # STATUS VOTING: tallied
+        data = {'action': 'start'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting already started')
+
+        data = {'action': 'stop'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting already stopped')
+
+        data = {'action': 'tally'}
+        response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), 'Voting already tallied')

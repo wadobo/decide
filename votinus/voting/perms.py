@@ -6,7 +6,7 @@ from base import mods
 class UserIsStaff(permissions.BasePermission):
 
     def has_permission(self, request, view):
-        if request.method != 'POST':
+        if request.method == 'GET':
             return True
         if not request.auth:
             return False
