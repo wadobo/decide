@@ -8,6 +8,7 @@ from rest_framework.test import APITestCase
 from .models import Vote
 from .serializers import VoteSerializer
 from base import mods
+from base.tests import BaseTestCase
 from census.models import Census
 from mixnet.models import Auth
 from mixnet.models import Key
@@ -15,11 +16,10 @@ from voting.models import Question
 from voting.models import Voting
 
 
-class StoreTextCase(APITestCase):
+class StoreTextCase(BaseTestCase):
 
     def setUp(self):
-        self.client = APIClient()
-        mods.mock_query(self.client)
+        super().setUp()
         self.question = Question(desc='qwerty')
         self.question.save()
         self.voting = Voting(pk=5001,
@@ -30,7 +30,7 @@ class StoreTextCase(APITestCase):
         self.voting.save()
 
     def tearDown(self):
-        self.client = None
+        super().tearDown()
 
     def gen_voting(self, pk):
         voting = Voting(pk=pk, name='v1', question=self.question, start_date=timezone.now(),
@@ -89,7 +89,14 @@ class StoreTextCase(APITestCase):
 
     def test_vote(self):
         self.gen_votes()
+        response = self.client.get('/store/', format='json')
+        self.assertEqual(response.status_code, 401)
 
+        self.login(user='noadmin')
+        response = self.client.get('/store/', format='json')
+        self.assertEqual(response.status_code, 403)
+
+        self.login()
         response = self.client.get('/store/', format='json')
         self.assertEqual(response.status_code, 200)
         votes = response.json()
@@ -101,6 +108,14 @@ class StoreTextCase(APITestCase):
         votings, voters = self.gen_votes()
         v = votings[0]
 
+        response = self.client.get('/store/?voting_id={}'.format(v), format='json')
+        self.assertEqual(response.status_code, 401)
+
+        self.login(user='noadmin')
+        response = self.client.get('/store/?voting_id={}'.format(v), format='json')
+        self.assertEqual(response.status_code, 403)
+
+        self.login()
         response = self.client.get('/store/?voting_id={}'.format(v), format='json')
         self.assertEqual(response.status_code, 200)
         votes = response.json()
@@ -120,6 +135,14 @@ class StoreTextCase(APITestCase):
         v = vo.voting_id
         u = vo.voter_id
 
+        response = self.client.get('/store/?voting_id={}&voter_id={}'.format(v, u), format='json')
+        self.assertEqual(response.status_code, 401)
+
+        self.login(user='noadmin')
+        response = self.client.get('/store/?voting_id={}&voter_id={}'.format(v, u), format='json')
+        self.assertEqual(response.status_code, 403)
+
+        self.login()
         response = self.client.get('/store/?voting_id={}&voter_id={}'.format(v, u), format='json')
         self.assertEqual(response.status_code, 200)
         votes = response.json()

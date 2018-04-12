@@ -16,9 +16,13 @@ class VotingView(generics.ListCreateAPIView):
     serializer_class = VotingSerializer
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_fields = ('id', )
-    permission_classes = (UserIsStaff,)
+
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
+        self.permission_classes = (UserIsStaff,)
+        self.check_permissions(request)
         for data in ['name', 'desc', 'question', 'question_opt']:
             if not data in request.data:
                 return Response({}, status=status.HTTP_400_BAD_REQUEST)
@@ -83,7 +87,7 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
                 msg = 'Voting already tallied'
                 st = status.HTTP_400_BAD_REQUEST
             else:
-                voting.tally_votes()
+                voting.tally_votes(request.auth.key)
                 msg = 'Voting tallied'
         else:
             msg = 'Action not found, try with start, stop or tally'

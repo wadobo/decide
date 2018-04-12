@@ -58,18 +58,18 @@ class Voting(models.Model):
         self.pub_key = pk
         self.save()
 
-    def get_votes(self):
+    def get_votes(self, token=''):
         # gettings votes from store
-        votes = mods.get('store', params={'voting_id': self.id})
+        votes = mods.get('store', params={'voting_id': self.id}, HTTP_AUTHORIZATION='Token ' + token)
         # anon votes
         return [[i['a'], i['b']] for i in votes]
 
-    def tally_votes(self):
+    def tally_votes(self, token=''):
         '''
         The tally is a shuffle and then a decrypt
         '''
 
-        votes = self.get_votes()
+        votes = self.get_votes(token)
 
         auth = self.auths.first()
         shuffle_url = "/shuffle/{}/".format(self.id)

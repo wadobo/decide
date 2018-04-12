@@ -2,40 +2,22 @@ import random
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
-from rest_framework.test import APITestCase
 
 from .models import Census
 from base import mods
+from base.tests import BaseTestCase
 
 
-class CensusTestCase(APITestCase):
+class CensusTestCase(BaseTestCase):
 
     def setUp(self):
-        self.client = APIClient()
-        mods.mock_query(self.client)
+        super().setUp()
         self.census = Census(voting_id=1, voter_id=1)
         self.census.save()
 
-        user_noadmin = User(username='noadmin')
-        user_noadmin.set_password('qwerty')
-        user_noadmin.save()
-
-        user_admin = User(username='admin', is_staff=True)
-        user_admin.set_password('qwerty')
-        user_admin.save()
-
-
     def tearDown(self):
-        self.client = None
+        super().tearDown()
         self.census = None
-
-    def login(self, user='admin', password='qwerty'):
-        data_user = {'username': user, 'password': password}
-        response = mods.post('authentication/login', json=data_user, response=True)
-        self.assertEqual(response.status_code, 200)
-        token = response.json().get('token')
-        self.assertTrue(token)
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
 
     def test_check_vote_permissions(self):
         response = self.client.get('/census/{}/?voter_id={}'.format(1, 2), format='json')
@@ -47,6 +29,14 @@ class CensusTestCase(APITestCase):
         self.assertEqual(response.json(), 'Valid voter')
 
     def test_list_voting(self):
+        response = self.client.get('/census/?voting_id={}'.format(1), format='json')
+        self.assertEqual(response.status_code, 401)
+
+        self.login(user='noadmin')
+        response = self.client.get('/census/?voting_id={}'.format(1), format='json')
+        self.assertEqual(response.status_code, 403)
+
+        self.login()
         response = self.client.get('/census/?voting_id={}'.format(1), format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {'voters': [1]})
