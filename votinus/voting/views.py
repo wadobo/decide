@@ -5,10 +5,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from mixnet.models import Auth
 from .models import Question, QuestionOption, Voting
-from .perms import UserIsStaff
 from .serializers import VotingSerializer
+from base.perms import UserIsStaff
+from mixnet.models import Auth
 
 
 class VotingView(generics.ListCreateAPIView):

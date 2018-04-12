@@ -1,4 +1,5 @@
 import random
+from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
@@ -15,9 +16,26 @@ class CensusTestCase(APITestCase):
         self.census = Census(voting_id=1, voter_id=1)
         self.census.save()
 
+        user_noadmin = User(username='noadmin')
+        user_noadmin.set_password('qwerty')
+        user_noadmin.save()
+
+        user_admin = User(username='admin', is_staff=True)
+        user_admin.set_password('qwerty')
+        user_admin.save()
+
+
     def tearDown(self):
         self.client = None
         self.census = None
+
+    def login(self, user='admin', password='qwerty'):
+        data_user = {'username': user, 'password': password}
+        response = mods.post('authentication/login', json=data_user, response=True)
+        self.assertEqual(response.status_code, 200)
+        token = response.json().get('token')
+        self.assertTrue(token)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
 
     def test_check_vote_permissions(self):
         response = self.client.get('/census/{}/?voter_id={}'.format(1, 2), format='json')
@@ -36,10 +54,26 @@ class CensusTestCase(APITestCase):
     def test_add_new_voters_conflict(self):
         data = {'voting_id': 1, 'voters': [1]}
         response = self.client.post('/census/', data, format='json')
+        self.assertEqual(response.status_code, 401)
+
+        self.login(user='noadmin')
+        response = self.client.post('/census/', data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        self.login()
+        response = self.client.post('/census/', data, format='json')
         self.assertEqual(response.status_code, 409)
 
     def test_add_new_voters(self):
         data = {'voting_id': 2, 'voters': [1,2,3,4]}
+        response = self.client.post('/census/', data, format='json')
+        self.assertEqual(response.status_code, 401)
+
+        self.login(user='noadmin')
+        response = self.client.post('/census/', data, format='json')
+        self.assertEqual(response.status_code, 403)
+
+        self.login()
         response = self.client.post('/census/', data, format='json')
         self.assertEqual(response.status_code, 201)
         self.assertEqual(len(data.get('voters')), Census.objects.count() - 1)
