@@ -21,6 +21,13 @@ class VotingTestCase(APITestCase):
     def setUp(self):
         self.client = APIClient()
         mods.mock_query(self.client)
+        user_noadmin = User(username='noadmin')
+        user_noadmin.set_password('qwerty')
+        user_noadmin.save()
+
+        user_admin = User(username='admin', is_staff=True)
+        user_admin.set_password('qwerty')
+        user_admin.save()
 
     def tearDown(self):
         self.client = None
@@ -94,3 +101,38 @@ class VotingTestCase(APITestCase):
 
         for q in v.postproc:
             self.assertEqual(tally.get(q["number"], 0), q["votes"])
+
+    def test_create_voting_from_api(self):
+        data = {'name': 'Example'}
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 401)
+
+        # login with user no admin
+        data = {'username': 'noadmin', 'password': 'qwerty'}
+        response = self.client.post('/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+        token = response.json().get('token')
+        self.assertTrue(token)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = mods.post('voting', params=data, response=True)
+        self.assertEqual(response.status_code, 403)
+
+        # login with user admin
+        data = {'username': 'admin', 'password': 'qwerty'}
+        response = self.client.post('/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+        token = response.json().get('token')
+        self.assertTrue(token)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+        response = mods.post('voting', params=data, response=True)
+        self.assertEqual(response.status_code, 400)
+
+        data = {
+            'name': 'Example',
+            'desc': 'Description example',
+            'question': 'I want a ',
+            'question_opt': ['cat', 'dog', 'horse']
+        }
+
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 201)
