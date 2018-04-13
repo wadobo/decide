@@ -52,20 +52,26 @@
 
         function postData(url, data) {
           // Default options are marked with *
-          return fetch(url, {
+          var fdata = {
             body: JSON.stringify(data),
             headers: {
-              'content-type': 'application/json'
+              'content-type': 'application/json',
             },
             method: 'POST',
-          })
+          };
+
+          if (token) {
+              fdata.headers['Authorization'] = 'Token ' + token;
+          }
+
+          return fetch(url, fdata)
           .then(response => {
             if (response.status === 200) {
                 return response.json();
             } else {
                 return Promise.reject(response.statusText);
             }
-          })
+          });
         }
 
         function votinusEncrypt() {
