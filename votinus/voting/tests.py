@@ -55,9 +55,17 @@ class VotingTestCase(BaseTestCase):
             c = Census(voter_id=u.id, voting_id=v.id)
             c.save()
 
+    def get_or_create_user(self, pk):
+        user, _ = User.objects.get_or_create(pk=pk)
+        user.username = 'user{}'.format(pk)
+        user.set_password('qwerty')
+        user.save()
+        return user
+
     def store_votes(self, v):
         voters = list(Census.objects.filter(voting_id=v.id))
         voter = voters.pop()
+
         clear = {}
         for opt in v.question.options.all():
             clear[opt.number] = 0
@@ -69,6 +77,8 @@ class VotingTestCase(BaseTestCase):
                     'vote': { 'a': a, 'b': b },
                 }
                 clear[opt.number] += 1
+                user = self.get_or_create_user(voter.voter_id)
+                self.login(user=user.username)
                 voter = voters.pop()
                 mods.post('store', json=data)
         return clear
