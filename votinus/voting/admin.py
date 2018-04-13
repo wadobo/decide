@@ -5,6 +5,8 @@ from .models import QuestionOption
 from .models import Question
 from .models import Voting
 
+from .filters import StartedFilter
+
 
 def start(modeladmin, request, queryset):
     for v in queryset.all():
@@ -21,7 +23,8 @@ def stop(ModelAdmin, request, queryset):
 
 def tally(ModelAdmin, request, queryset):
     for v in queryset.filter(end_date__lt=timezone.now()):
-        v.tally_votes()
+        token = request.session.get('auth-token', '')
+        v.tally_votes(token)
 
 
 class QuestionOptionInline(admin.TabularInline):
@@ -36,6 +39,9 @@ class VotingAdmin(admin.ModelAdmin):
     list_display = ('name', 'start_date', 'end_date')
     readonly_fields = ('start_date', 'end_date', 'pub_key',
                        'tally', 'postproc')
+    date_hierarchy = 'start_date'
+    list_filter = (StartedFilter,)
+    search_fields = ('name', )
 
     actions = [ start, stop, tally ]
 

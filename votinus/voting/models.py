@@ -58,18 +58,18 @@ class Voting(models.Model):
         self.pub_key = pk
         self.save()
 
-    def get_votes(self):
+    def get_votes(self, token=''):
         # gettings votes from store
-        votes = mods.get('store', params={'voting_id': self.id})
+        votes = mods.get('store', params={'voting_id': self.id}, HTTP_AUTHORIZATION='Token ' + token)
         # anon votes
         return [[i['a'], i['b']] for i in votes]
 
-    def tally_votes(self):
+    def tally_votes(self, token=''):
         '''
         The tally is a shuffle and then a decrypt
         '''
 
-        votes = self.get_votes()
+        votes = self.get_votes(token)
 
         auth = self.auths.first()
         shuffle_url = "/shuffle/{}/".format(self.id)
@@ -78,12 +78,22 @@ class Voting(models.Model):
 
         # first, we do the shuffle
         data = { "msgs": votes }
-        shuffled = mods.post('mixnet', entry_point=shuffle_url, baseurl=auth.url, json=data)
-        # then, we can decrypt that
-        data = { "msgs": shuffled }
-        clear = mods.post('mixnet', entry_point=decrypt_url, baseurl=auth.url, json=data)
+        response = mods.post('mixnet', entry_point=shuffle_url, baseurl=auth.url, json=data,
+                response=True)
+        if response.status_code != 200:
+            # TODO: manage error
+            pass
 
-        self.tally = clear
+        # then, we can decrypt that
+        data = {"msgs": response.json()}
+        response = mods.post('mixnet', entry_point=decrypt_url, baseurl=auth.url, json=data,
+                response=True)
+
+        if response.status_code != 200:
+            # TODO: manage error
+            pass
+
+        self.tally = response.json()
         self.save()
 
         self.do_postproc()
@@ -94,10 +104,14 @@ class Voting(models.Model):
 
         opts = []
         for opt in options:
+            if isinstance(tally, list):
+                votes = tally.count(opt.number)
+            else:
+                votes = 0
             opts.append({
                 'option': opt.option,
                 'number': opt.number,
-                'votes': tally.count(opt.number)
+                'votes': votes
             })
 
         data = { 'type': 'IDENTITY', 'options': opts }

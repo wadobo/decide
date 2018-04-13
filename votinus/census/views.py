@@ -1,6 +1,5 @@
 from django.db.utils import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -11,10 +10,12 @@ from rest_framework.status import (
         HTTP_409_CONFLICT as ST_409
 )
 
+from base.perms import UserIsStaff
 from .models import Census
 
 
 class CensusCreate(generics.ListCreateAPIView):
+    permission_classes = (UserIsStaff,)
 
     def create(self, request, *args, **kwargs):
         voting_id = request.data.get('voting_id')
