@@ -1,5 +1,6 @@
 import datetime
 import random
+from django.contrib.auth.models import User
 from django.utils import timezone
 from django.test import TestCase
 from rest_framework.test import APIClient
@@ -37,14 +38,23 @@ class StoreTextCase(BaseTestCase):
                 end_date=timezone.now() + datetime.timedelta(days=1))
         voting.save()
 
+    def get_or_create_user(self, pk):
+        user, _ = User.objects.get_or_create(pk=pk)
+        user.username = 'user{}'.format(pk)
+        user.set_password('qwerty')
+        user.save()
+        return user
+
     def gen_votes(self):
         votings = [random.randint(1, 5000) for i in range(10)]
-        users = [random.randint(1, 5000) for i in range(50)]
+        users = [random.randint(3, 5002) for i in range(50)]
         for v in votings:
             a = random.randint(2, 500)
             b = random.randint(2, 500)
             self.gen_voting(v)
             random_user = random.choice(users)
+            user = self.get_or_create_user(random_user)
+            self.login(user=user.username)
             census = Census(voting_id=v, voter_id=random_user)
             census.save()
             data = {
@@ -55,6 +65,7 @@ class StoreTextCase(BaseTestCase):
             response = self.client.post('/store/', data, format='json')
             self.assertEqual(response.status_code, 200)
 
+        self.logout()
         return votings, users
 
     def test_gen_vote_invalid(self):
@@ -78,6 +89,8 @@ class StoreTextCase(BaseTestCase):
             "voter": 1,
             "vote": { "a": CTE_A, "b": CTE_B }
         }
+        user = self.get_or_create_user(1)
+        self.login(user=user.username)
         response = self.client.post('/store/', data, format='json')
         self.assertEqual(response.status_code, 200)
 
@@ -162,6 +175,8 @@ class StoreTextCase(BaseTestCase):
         # not opened
         self.voting.start_date = timezone.now() + datetime.timedelta(days=1)
         self.voting.save()
+        user = self.get_or_create_user(1)
+        self.login(user=user.username)
         response = self.client.post('/store/', data, format='json')
         self.assertEqual(response.status_code, 401)
 

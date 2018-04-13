@@ -31,3 +31,6 @@ class BaseTestCase(APITestCase):
         self.token = response.json().get('token')
         self.assertTrue(self.token)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+
+    def logout(self):
+        self.client.credentials()
