@@ -1,20 +1,18 @@
 import random
 import itertools
-from django.utils import timezone
-
-from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User
-
-from mixnet.mixcrypt import MixCrypt
-from mixnet.mixcrypt import ElGamal
-
-from voting.models import Voting, Question, QuestionOption
-from mixnet.models import Auth
-from census.models import Census
-
-from base import mods
 
 from django.conf import settings
+from django.core.management.base import BaseCommand
+from django.contrib.auth.models import User
+from django.utils import timezone
+
+from base import mods
+from base.models import Auth
+from census.models import Census
+from mixnet.mixcrypt import MixCrypt
+from mixnet.mixcrypt import ElGamal
+from voting.models import Voting, Question, QuestionOption
+
 
 
 class Command(BaseCommand):

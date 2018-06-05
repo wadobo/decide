@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from .models import Question, QuestionOption, Voting
 from .serializers import VotingSerializer
 from base.perms import UserIsStaff
-from mixnet.models import Auth
+from base.models import Auth
 
 
 class VotingView(generics.ListCreateAPIView):

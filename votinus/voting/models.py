@@ -3,9 +3,8 @@ from django.contrib.postgres.fields import JSONField
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from mixnet.models import Auth, Key
-
 from base import mods
+from base.models import Auth, Key
 
 
 class Question(models.Model):
