@@ -5,3 +5,4 @@ django-cors-headers==2.1.0
 requests==2.18.4
 django-filter==1.1.0
 psycopg2==2.7.4
+django-rest-swagger==2.2.0
