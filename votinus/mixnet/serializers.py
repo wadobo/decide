@@ -1,18 +1,7 @@
 from rest_framework import serializers
 
-from .models import Auth, Mixnet, Key
-
-
-class AuthSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Auth
-        fields = ('name', 'url', 'me')
-
-
-class KeySerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Key
-        fields = ('p', 'g', 'y')
+from .models import Mixnet
+from base.serializers import AuthSerializer, KeySerializer
 
 
 class MixnetSerializer(serializers.HyperlinkedModelSerializer):

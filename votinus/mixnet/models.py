@@ -3,33 +3,13 @@ from django.db import models
 from .mixcrypt import MixCrypt
 
 from base import mods
+from base.models import Auth, Key
+from base.serializers import AuthSerializer
 
 
 # number of bits for the key, all auths should use the same number of bits
 # TODO: move this to the settings
 B = 8
-
-
-class Auth(models.Model):
-    name = models.CharField(max_length=200)
-    url = models.URLField()
-    me = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.url
-
-
-class Key(models.Model):
-    p = models.IntegerField()
-    g = models.IntegerField()
-    y = models.IntegerField()
-    x = models.IntegerField(blank=True, null=True)
-
-    def __str__(self):
-        if self.x:
-            return "{},{},{},{}".format(self.p, self.g, self.y, self.x)
-        else:
-            return "{},{},{}".format(self.p, self.g, self.y)
 
 
 class Mixnet(models.Model):
@@ -79,8 +59,6 @@ class Mixnet(models.Model):
             self.save()
 
     def chain_call(self, path, data):
-        from .serializers import AuthSerializer
-
         next_auths=self.next_auths()
 
         data.update({

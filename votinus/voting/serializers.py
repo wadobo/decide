@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from .models import Question, QuestionOption, Voting
-from mixnet.serializers import KeySerializer, AuthSerializer
+from base.serializers import KeySerializer, AuthSerializer
 
 
 class QuestionOptionSerializer(serializers.HyperlinkedModelSerializer):

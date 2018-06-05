@@ -9,9 +9,9 @@ from rest_framework.test import APITestCase
 from .models import Vote
 from .serializers import VoteSerializer
 from base import mods
+from base.models import Auth
 from base.tests import BaseTestCase
 from census.models import Census
-from mixnet.models import Auth
 from mixnet.models import Key
 from voting.models import Question
 from voting.models import Voting
