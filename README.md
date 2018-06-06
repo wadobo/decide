@@ -87,6 +87,10 @@ Lanzar la consola django:
 
     $ docker exec -ti decide_web ./manage.py shell
 
+Lanzar tests:
+
+    $ docker exec -ti decide_web ./manage.py test
+
 Lanzar una consola SQL:
 
     $ docker exec -ti decide_db ash -c "su - postgres -c 'psql postgres'"
