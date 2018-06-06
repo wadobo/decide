@@ -5,7 +5,7 @@ from django.conf import settings
 
 def query(modname, entry_point='/', method='get', baseurl=None, **kwargs):
     '''
-    Function to query other votinus modules
+    Function to query other decide modules
 
     :param modname: is the module name, voting, mixnet, etc
     :param entry_point: is the path to query

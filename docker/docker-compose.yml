@@ -3,16 +3,16 @@ version: '3.4'
 services:
   db:
     restart: always
-    container_name: votinus_db
+    container_name: decide_db
     image: postgres:alpine
     volumes:
       - db:/var/lib/postgresql/data
   web:
     restart: always
-    container_name: votinus_web
-    image: votinus_web:latest
+    container_name: decide_web
+    image: decide_web:latest
     build: .
-    command: ash -c "python manage.py migrate && gunicorn -w 5 votinus.wsgi --timeout=500 -b 0.0.0.0:5000"
+    command: ash -c "python manage.py migrate && gunicorn -w 5 decide.wsgi --timeout=500 -b 0.0.0.0:5000"
     expose:
       - "5000"
     volumes:
@@ -21,8 +21,8 @@ services:
       - db
   nginx:
     restart: always
-    container_name: votinus_nginx
-    image: votinus_nginx:latest
+    container_name: decide_nginx
+    image: decide_nginx:latest
     build:
         context: .
         dockerfile: Dockerfile-nginx
@@ -35,6 +35,6 @@ services:
 
 volumes:
   static:
-    name: votinus_static
+    name: decide_static
   db:
-    name: votinus_db
+    name: decide_db

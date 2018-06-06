@@ -11,11 +11,11 @@
         <label for="password">{% trans "Password" %}</label>
         <input type="password" id="password" name="username" value=""/>
         <br/>
-        <input type="submit" value="{% trans "Login" %}" onClick="votinusLogin()"/>
+        <input type="submit" value="{% trans "Login" %}" onClick="decideLogin()"/>
     </div>
 
     <div id="voting">
-        <a href="#" onClick="votinusLogout()">{% trans "logout" %}</a>
+        <a href="#" onClick="decideLogout()">{% trans "logout" %}</a>
         <h2>{{ voting.question.desc }}</h2>
 
         {% for opt in voting.question.options %}
@@ -24,7 +24,7 @@
             </label>
         {% endfor %}
 
-        <input type="submit" value="{% trans "Vote" %}" onClick="votinusSend()"/>
+        <input type="submit" value="{% trans "Vote" %}" onClick="decideSend()"/>
     </div>
 {% endblock %}
 
@@ -74,15 +74,15 @@
           });
         }
 
-        function votinusEncrypt() {
+        function decideEncrypt() {
             var msg = document.querySelector("input[name=question]:checked").value;
             var bigmsg = BigInt.fromJSONObject(msg);
             var cipher = ElGamal.encrypt(bigpk, bigmsg);
             return cipher;
         }
 
-        function votinusSend() {
-            var v = votinusEncrypt();
+        function decideSend() {
+            var v = decideEncrypt();
             var data = {
                 vote: {a: v.alpha.toString(), b: v.beta.toString()},
                 voting: {{voting.id}},
@@ -100,17 +100,17 @@
               });
         }
 
-        function votinusLogout() {
+        function decideLogout() {
             var data = { token: token };
             postData("{{auth_url}}" + "/authentication/logout/", data);
 
             token = null;
             user = null;
-            document.cookie = 'votinus=;';
+            document.cookie = 'decide=;';
             panel('login');
         }
 
-        function votinusUser() {
+        function decideUser() {
             var data = { token: token };
             postData("{{auth_url}}" + "/authentication/getuser/", data)
               .then(data => {
@@ -121,16 +121,16 @@
               });
         }
 
-        function votinusLogin() {
+        function decideLogin() {
             var data = {
                 username: document.querySelector("#username").value,
                 password: document.querySelector("#password").value,
             };
             postData("{{auth_url}}" + "/authentication/login/", data)
               .then(data => {
-                document.cookie = 'votinus='+data.token+';';
+                document.cookie = 'decide='+data.token+';';
                 token = data.token;
-                votinusUser();
+                decideUser();
               })
               .catch(error => {
                 alert("{% trans "Error: " %}" + error);
@@ -158,9 +158,9 @@
             var cookies = document.cookie.split("; ");
             cookies.forEach((c) => {
                 var cs = c.split("=");
-                if (cs[0] == 'votinus' && cs[1]) {
+                if (cs[0] == 'decide' && cs[1]) {
                     token = cs[1];
-                    votinusUser();
+                    decideUser();
                 }
             });
         }

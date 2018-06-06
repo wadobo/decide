@@ -1,4 +1,4 @@
-from votinus.settings import *
+from decide.settings import *
 
 # Modules in use, commented modules that you won't use
 MODULES = [

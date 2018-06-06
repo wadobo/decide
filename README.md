@@ -35,10 +35,10 @@ fichero requirements.txt:
 Tras esto tendremos que crearnos nuestra base de datos con postgres:
 
     sudo su - postgres
-    psql -c "create user votinus with password 'votinus'"
-    psql -c "create database votinus owner votinus"
+    psql -c "create user decide with password 'decide'"
+    psql -c "create database decide owner decide"
 
-Entramos en la carpeta del proyecto (cd votinus) y realizamos la primera migración para preparar la
+Entramos en la carpeta del proyecto (cd decide) y realizamos la primera migración para preparar la
 base de datos que utilizaremos:
 
     ./manage.py migrate
@@ -56,16 +56,16 @@ para el servidor de base de datos, otro para el django y otro con un
 servidor web nginx para servir los ficheros estáticos y hacer de proxy al
 servidor django:
 
- * votinus\_db
- * votinus\_web
- * votinus\_nginx
+ * decide\_db
+ * decide\_web
+ * decide\_nginx
 
 Además se crean dos volúmenes, uno para los ficheros estáticos y medias del
 proyecto y otro para la base de datos postgresql, de esta forma los
 contenedores se pueden destruir sin miedo a perder datos:
 
- * votinus\_db
- * votinus\_static
+ * decide\_db
+ * decide\_static
 
 Se puede editar el fichero docker-settings.py para modificar el settings
 del proyecto django antes de crear las imágenes del contenedor.
@@ -81,12 +81,12 @@ Parar contenedores:
 
 Crear un usuario administrador:
 
-    $ docker exec -ti votinus_web ./manage.py createsuperuser
+    $ docker exec -ti decide_web ./manage.py createsuperuser
 
 Lanzar la consola django:
 
-    $ docker exec -ti votinus_web ./manage.py shell
+    $ docker exec -ti decide_web ./manage.py shell
 
 Lanzar una consola SQL:
 
-    $ docker exec -ti votinus_db ash -c "su - postgres -c 'psql postgres'"
+    $ docker exec -ti decide_db ash -c "su - postgres -c 'psql postgres'"
