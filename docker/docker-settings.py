@@ -1,4 +1,4 @@
-DEBUG = False
+DEBUG = True
 
 DATABASES = {
     'default': {
@@ -27,16 +27,16 @@ MODULES = [
     'voting',
 ]
 
-BASEURL = 'http://localhost:5000'
+BASEURL = 'http://192.168.124.1:8000'
 
 APIS = {
-    'authentication': 'http://localhost:5000',
-    'base': 'http://localhost:5000',
-    'booth': 'http://localhost:5000',
-    'census': 'http://localhost:5000',
-    'mixnet': 'http://localhost:5000',
-    'postproc': 'http://localhost:5000',
-    'store': 'http://localhost:5000',
-    'visualizer': 'http://localhost:5000',
-    'voting': 'http://localhost:5000',
+    'authentication': 'http://192.168.124.1:8000',
+    'base': 'http://192.168.124.1:8000',
+    'booth': 'http://192.168.124.1:8000',
+    'census': 'http://192.168.124.1:8000',
+    'mixnet': 'http://192.168.124.1:8000',
+    'postproc': 'http://192.168.124.1:8000',
+    'store': 'http://192.168.124.1:8000',
+    'visualizer': 'http://192.168.124.1:8000',
+    'voting': 'http://192.168.124.1:8000',
 }
