@@ -5,11 +5,11 @@ from .mixcrypt import MixCrypt
 from base import mods
 from base.models import Auth, Key
 from base.serializers import AuthSerializer
+from django.conf import settings
 
 
 # number of bits for the key, all auths should use the same number of bits
-# TODO: move this to the settings
-B = 256
+B = settings.KEYBITS
 
 
 class Mixnet(models.Model):
