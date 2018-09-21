@@ -1,5 +1,5 @@
 ElGamal = {};
-ElGamal.BITS = 8;
+ElGamal.BITS = 256;
 
 ElGamal.getRandomInteger = function(max) {
   var bit_length = max.bitLength();

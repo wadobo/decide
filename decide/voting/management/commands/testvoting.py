@@ -18,7 +18,7 @@ from voting.models import Voting, Question, QuestionOption
 class Command(BaseCommand):
     help = 'Test the full voting process with one auth (self)'
 
-    def encrypt_msg(self, msg, v, bits=8):
+    def encrypt_msg(self, msg, v, bits=256):
         pk = v.pub_key
         p, g, y = (pk.p, pk.g, pk.y)
         k = MixCrypt(bits=bits)

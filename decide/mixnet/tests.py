@@ -17,7 +17,7 @@ class MixnetCase(APITestCase):
     def tearDown(self):
         self.client = None
 
-    def encrypt_msgs(self, msgs, pk, bits=8):
+    def encrypt_msgs(self, msgs, pk, bits=256):
         p, g, y = pk
         k = MixCrypt(bits=bits)
         k.k = ElGamal.construct((p, g, y))

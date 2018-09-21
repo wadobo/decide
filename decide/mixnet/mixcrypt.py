@@ -1,5 +1,5 @@
 '''
->>> B = 64
+>>> B = 256
 >>> k1 = MixCrypt(bits=B)
 >>> k2 = MixCrypt(k=k1.k, bits=B)
 >>> k3 = gen_multiple_key(k1, k2)
@@ -12,7 +12,7 @@ False
 >>> sorted(clears) == sorted(d)
 True
 
->>> B = 8
+>>> B = 256
 >>> k1 = MixCrypt(bits=B)
 >>> k1.setk(167,156,89,130) #doctest: +ELLIPSIS
 <Crypto.PublicKey.ElGamal.ElGamalobj object at 0x...>
@@ -75,7 +75,7 @@ def multiple_decrypt_shuffle(ciphers, *crypts):
 
 def multiple_decrypt_shuffle2(ciphers, *crypts, pubkey=None):
     '''
-    >>> B = 64
+    >>> B = 256
     >>> k1 = MixCrypt(bits=B)
     >>> k2 = MixCrypt(k=k1.k, bits=B)
     >>> k3 = gen_multiple_key(k1, k2)
@@ -164,7 +164,7 @@ class MixCrypt:
 
     def reencrypt(self, cipher, pubkey=None):
         '''
-        >>> B = 64
+        >>> B = 256
         >>> k = MixCrypt(bits=B)
         >>> clears = [random.StrongRandom().randint(1, B) for i in range(5)]
         >>> cipher = [k.encrypt(i) for i in clears]

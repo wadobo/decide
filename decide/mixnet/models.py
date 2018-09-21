@@ -9,7 +9,7 @@ from base.serializers import AuthSerializer
 
 # number of bits for the key, all auths should use the same number of bits
 # TODO: move this to the settings
-B = 8
+B = 256
 
 
 class Mixnet(models.Model):
