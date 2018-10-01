@@ -44,7 +44,7 @@ from Crypto.Util.number import GCD
 
 def rand(p):
     while True:
-        k = random.StrongRandom().randint(1, p - 1)
+        k = random.StrongRandom().randint(1, int(p) - 1)
         if GCD(k, p - 1) == 1: break
     return k
 
@@ -129,11 +129,11 @@ class MixCrypt:
         r = rand(self.k.p)
         if not k:
             k = self.k
-        a, b = k.encrypt(m, r)
+        a, b = k._encrypt(m, r)
         return a, b
 
     def decrypt(self, c):
-        m = self.k.decrypt(c)
+        m = self.k._decrypt(c)
         return m
 
     def multiple_decrypt(self, msgs, last=True):
@@ -183,10 +183,11 @@ class MixCrypt:
         else:
             k = self.k
 
-        a, b = cipher
-        a1, b1 = self.encrypt(1, k=k)
+        a, b = map(int, cipher)
+        a1, b1 = map(int, self.encrypt(1, k=k))
+        p = int(k.p)
 
-        return ((a * a1) % k.p, (b * b1) % k.p)
+        return ((a * a1) % p, (b * b1) % p)
 
     def gen_perm(self, l):
         x = list(range(l))

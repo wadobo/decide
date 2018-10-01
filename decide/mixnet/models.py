@@ -45,14 +45,14 @@ class Mixnet(models.Model):
             k = crypt.setk(self.key.p, self.key.g, self.key.y, self.key.x)
         elif (not g or not p):
             k = crypt.genk()
-            key = Key(p=k.p, g=k.g, y=k.y, x=k.x)
+            key = Key(p=int(k.p), g=int(k.g), y=int(k.y), x=int(k.x))
             key.save()
 
             self.key = key
             self.save()
         else:
             k = crypt.getk(p, g)
-            key = Key(p=k.p, g=k.g, y=k.y, x=k.x)
+            key = Key(p=int(k.p), g=int(k.g), y=int(k.y), x=int(k.x))
             key.save()
 
             self.key = key
