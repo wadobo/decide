@@ -41,6 +41,7 @@
     <script src="{% static "crypto/elgamal.js" %}"></script>
 
     <script>
+        ElGamal.BITS = {{ KEYBITS }};
         var bigpk = {
             p: BigInt.fromJSONObject("{{voting.pub_key.p}}"),
             g: BigInt.fromJSONObject("{{voting.pub_key.g}}"),

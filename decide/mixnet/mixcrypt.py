@@ -1,5 +1,5 @@
 '''
->>> B = 64
+>>> B = 256
 >>> k1 = MixCrypt(bits=B)
 >>> k2 = MixCrypt(k=k1.k, bits=B)
 >>> k3 = gen_multiple_key(k1, k2)
@@ -12,7 +12,7 @@ False
 >>> sorted(clears) == sorted(d)
 True
 
->>> B = 8
+>>> B = 256
 >>> k1 = MixCrypt(bits=B)
 >>> k1.setk(167,156,89,130) #doctest: +ELLIPSIS
 <Crypto.PublicKey.ElGamal.ElGamalobj object at 0x...>
@@ -44,8 +44,8 @@ from Crypto.Util.number import GCD
 
 def rand(p):
     while True:
-        k = random.StrongRandom().randint(1, p - 1)
-        if GCD(k, p - 1) == 1: break
+        k = random.StrongRandom().randint(1, int(p) - 1)
+        if GCD(k, int(p) - 1) == 1: break
     return k
 
 
@@ -75,7 +75,7 @@ def multiple_decrypt_shuffle(ciphers, *crypts):
 
 def multiple_decrypt_shuffle2(ciphers, *crypts, pubkey=None):
     '''
-    >>> B = 64
+    >>> B = 256
     >>> k1 = MixCrypt(bits=B)
     >>> k2 = MixCrypt(k=k1.k, bits=B)
     >>> k3 = gen_multiple_key(k1, k2)
@@ -129,11 +129,11 @@ class MixCrypt:
         r = rand(self.k.p)
         if not k:
             k = self.k
-        a, b = k.encrypt(m, r)
+        a, b = k._encrypt(m, r)
         return a, b
 
     def decrypt(self, c):
-        m = self.k.decrypt(c)
+        m = self.k._decrypt(c)
         return m
 
     def multiple_decrypt(self, msgs, last=True):
@@ -164,7 +164,7 @@ class MixCrypt:
 
     def reencrypt(self, cipher, pubkey=None):
         '''
-        >>> B = 64
+        >>> B = 256
         >>> k = MixCrypt(bits=B)
         >>> clears = [random.StrongRandom().randint(1, B) for i in range(5)]
         >>> cipher = [k.encrypt(i) for i in clears]
@@ -183,10 +183,11 @@ class MixCrypt:
         else:
             k = self.k
 
-        a, b = cipher
-        a1, b1 = self.encrypt(1, k=k)
+        a, b = map(int, cipher)
+        a1, b1 = map(int, self.encrypt(1, k=k))
+        p = int(k.p)
 
-        return ((a * a1) % k.p, (b * b1) % k.p)
+        return ((a * a1) % p, (b * b1) % p)
 
     def gen_perm(self, l):
         x = list(range(l))

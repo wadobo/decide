@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.conf import settings
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
 
@@ -17,7 +18,7 @@ class MixnetCase(APITestCase):
     def tearDown(self):
         self.client = None
 
-    def encrypt_msgs(self, msgs, pk, bits=8):
+    def encrypt_msgs(self, msgs, pk, bits=settings.KEYBITS):
         p, g, y = pk
         k = MixCrypt(bits=bits)
         k.k = ElGamal.construct((p, g, y))

@@ -150,6 +150,9 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# number of bits for the key, all auths should use the same number of bits
+KEYBITS = 256
+
 try:
     from local_settings import *
 except ImportError:
