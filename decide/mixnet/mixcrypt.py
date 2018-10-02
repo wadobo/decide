@@ -45,7 +45,7 @@ from Crypto.Util.number import GCD
 def rand(p):
     while True:
         k = random.StrongRandom().randint(1, int(p) - 1)
-        if GCD(k, p - 1) == 1: break
+        if GCD(k, int(p) - 1) == 1: break
     return k
 
 
