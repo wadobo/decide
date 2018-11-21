@@ -7,3 +7,4 @@ django-filter==1.1.0
 psycopg2==2.7.4
 django-rest-swagger==2.2.0
 django-heroku
+gunicorn
