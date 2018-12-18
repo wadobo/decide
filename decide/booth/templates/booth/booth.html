@@ -90,7 +90,7 @@
                 voter: user.id,
                 token: token
             }
-            postData("{{store_url}}" + "/store/", data)
+            postData("{% url "gateway" "store" "/" %}", data)
               .then(data => {
                 alert("{% trans "Conglatulations. Your vote has been sent" %}")
                 console.log(v);
@@ -103,7 +103,7 @@
 
         function decideLogout() {
             var data = { token: token };
-            postData("{{auth_url}}" + "/authentication/logout/", data);
+            postData("{% url "gateway" "authentication" "/logout/" %}", data);
 
             token = null;
             user = null;
@@ -113,7 +113,7 @@
 
         function decideUser() {
             var data = { token: token };
-            postData("{{auth_url}}" + "/authentication/getuser/", data)
+            postData("{% url "gateway" "authentication" "/getuser/" %}", data)
               .then(data => {
                 user = data;
                 panel('voting');
@@ -127,7 +127,7 @@
                 username: document.querySelector("#username").value,
                 password: document.querySelector("#password").value,
             };
-            postData("{{auth_url}}" + "/authentication/login/", data)
+            postData("{% url "gateway" "authentication" "/login/" %}", data)
               .then(data => {
                 document.cookie = 'decide='+data.token+';';
                 token = data.token;
