@@ -1,0 +1,22 @@
+---
+- name: Install packages
+  become: true
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+  vars:
+    packages:
+    - git
+    - postgresql
+    - python3
+    - python3-pip
+    - python3-psycopg2
+    - python3-virtualenv
+    - virtualenv
+    - nginx
+    - libpq-dev
+    - python-setuptools
+    - build-essential
+    - python-dev
+    - make
+    - m4

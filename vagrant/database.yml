@@ -1,0 +1,16 @@
+---
+- name: Database
+  become: true
+  become_user: postgres
+  postgresql_db:
+    name: decide
+
+- name: Database user
+  become: true
+  become_user: postgres
+  postgresql_user:
+    db: decide
+    name: decide
+    password: decide
+    priv: ALL
+

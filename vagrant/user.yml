@@ -1,0 +1,7 @@
+---
+- name: Create decide user
+  become: true
+  user:
+    name: decide
+    comment: Decide app user
+    state: present

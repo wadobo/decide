@@ -1,0 +1,21 @@
+---
+- name: decide sysmtemd service
+  become: yes
+  become_user: root
+  copy:
+    src: files/decide.service
+    dest: /etc/systemd/system/decide.service
+
+- name: nginx.conf file
+  become: yes
+  become_user: root
+  copy:
+    src: files/nginx.conf
+    dest: /etc/nginx/conf.d/default.conf
+
+- name: django local_settings.py
+  become: yes
+  become_user: decide
+  copy:
+    src: files/settings.py
+    dest: /home/decide/decide/decide/local_settings.py
