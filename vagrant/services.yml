@@ -1,0 +1,12 @@
+---
+- name: Starting services
+  become: yes
+  become_user: root
+  systemd:
+    state: restarted
+    enabled: yes
+    name: "{{ item }}"
+  loop:
+    - postgresql
+    - nginx
+    - decide

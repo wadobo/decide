@@ -1,0 +1,24 @@
+---
+- name: Git clone
+  become: yes
+  become_user: decide
+  git:
+    repo: 'https://github.com/wadobo/decide.git'
+    dest: /home/decide/decide
+    version: master
+
+- name: Python virtualenv
+  become: yes
+  become_user: decide
+  pip:
+    name: "gunicorn"
+    virtualenv: /home/decide/venv
+    virtualenv_python: python3
+
+- name: Requirements
+  become: yes
+  become_user: decide
+  pip:
+    requirements: /home/decide/decide/requirements.txt
+    virtualenv: /home/decide/venv
+    virtualenv_python: python3
