@@ -7,6 +7,7 @@ from rest_framework.status import (
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -48,7 +49,7 @@ class RegisterView(APIView):
             user = User(username=username)
             user.set_password(pwd)
             user.save()
-            token, created = Token.objects.get_or_create(user=user)
-        except Exception as e:
+            token, _ = Token.objects.get_or_create(user=user)
+        except IntegrityError:
             return Response({}, status=HTTP_400_BAD_REQUEST)
         return Response({'user_pk': user.pk, 'token': token.key}, HTTP_201_CREATED)

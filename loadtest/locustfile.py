@@ -1,5 +1,6 @@
-import datetime
 import json
+
+from random import choice
 
 from locust import (
     HttpLocust,
@@ -8,7 +9,6 @@ from locust import (
     seq_task,
     task,
 )
-from random import choice
 
 
 HOST = "http://localhost:8000"
