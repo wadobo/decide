@@ -21,6 +21,33 @@ entre ellos. Para conseguir esto, los subsistemas se conectarán entre si median
 
 Este proyecto Django estará dividido en apps (subsistemas y proyecto base), donde cualquier app podrá ser reemplazada individualmente.
 
+Gateway
+-------
+
+Para ofrecer un punto de entrada conocido para todos los subsistemas
+existe el llamado **gateway** que no es más que una ruta disponible
+que redirigirá todas las peticiones al subsistema correspondiente, de
+tal forma que cualquier cliente que use la API no tiene por qué saber
+en qué servidor está desplegado cada subsistema.
+
+La ruta se compone de:
+
+    http://DOMINIO/gateway/SUBSISTEMA/RUTA/EN/EL/SUBSISTEMA
+
+Por ejemplo para acceder al subsistema de autenticación y hacer la petición
+al endpoint de /authentication/login/ deberíamos hacer la petición a la
+siguiente ruta:
+
+    http://DOMINIO/gateway/authentication/login/
+
+Otro ejemplo sería para obtener una votación por id:
+
+    http://DOMINIO/gateway/voting/?id=1
+
+A nivel interno, el módulo `mods` ofrece esta funcionalidad, pero el
+gateway es útil para hacer uso desde peticiones de cliente, por ejemplo
+en el javascript de la cabina de votación o la visualización de resultados,
+y también para módulos externos que no sean aplicaciones django.
 
 Configurar y ejecutar el proyecto
 ---------------------------------
