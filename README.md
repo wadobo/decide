@@ -97,6 +97,76 @@ Lanzar una consola SQL:
 
     $ docker exec -ti decide_db ash -c "su - postgres -c 'psql postgres'"
 
+Ejecutar con vagrant + ansible
+------------------------------
+
+Existe una configuración de vagrant que crea una máquina virtual con todo
+lo necesario instalado y listo para funcionar. La configuración está en
+vagrant/Vagrantfile y por defecto utiliza Virtualbox, por lo que para
+que esto funcione debes tener instalado en tu sistema vagrant y Virtualbox.
+
+Crear la máquina virtual con vagrant:
+
+    $ cd vagrant
+    $ vagrant up
+
+Una vez creada podremos acceder a la web, con el usuario admin/admin:
+
+http://localhost:8080/admin
+
+Acceder por ssh a la máquina:
+
+    $ vagrant ssh
+
+Esto nos dará una consola con el usuario vagrant, que tiene permisos de
+sudo, por lo que podremos acceder al usuario administrador con:
+
+    $ sudo su
+
+Parar la máquina virtual:
+
+    $ vagrant stop
+
+Una vez parada la máquina podemos volver a lanzarla con `vagrant up`.
+
+Eliminar la máquina virtual:
+
+    $ vagrant destroy
+
+Ansible
+-------
+
+El provisionamiento de la aplicación con vagrant está hecho con Ansible,
+algo que nos permite utilizarlo de forma independiente para provisionar
+una instalación de Decide en uno o varios servidores remotos con un
+simple comando.
+
+    $ cd vagrant
+    $ ansible-playbook -i inventory playbook.yml
+
+Para que esto funcione debes definir un fichero [inventory](https://docs.ansible.com/ansible/latest/user_guide/intro_inventory.html)
+con los servidores destino.
+
+Los scripts de ansible están divididos en varios ficheros .yml donde
+se definen las diferentes tareas, por lo que es posible lanzar partes
+independientes:
+
+  * packages.yml, dependencias del sistema
+  * user.yml, creación de usuario decide
+  * python.yml, git clone del repositorio e instalación de dependencias python en virtualenv
+  * files.yml, ficheros de configuración, systemd, nginx y local\_settings.py
+  * database.yml, creación de usuario y base de datos postgres
+  * django.yml, comandos django básicos y creación de usuario admin
+  * services.yml, reinicio de servicios, decide, nginx y postgres
+
+Por ejemplo este comando sólo reinicia los servicios en el servidor:
+
+    $ ansible-playbook -i inventory -t services
+
+El provisionamiento de ansible está diseñado para funcionar con **ubuntu/bionic64**,
+para funcionar con otras distribuciones es posible que haga falta modificar
+el fichero packages.yml.
+
 Test de estrés con Locust
 -------------------------
 
