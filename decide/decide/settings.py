@@ -50,7 +50,8 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.TokenAuthentication',
-    )
+    ),
+    'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.QueryParameterVersioning'
 }
 
 AUTHENTICATION_BACKENDS = [
@@ -159,6 +160,10 @@ STATIC_URL = '/static/'
 
 # number of bits for the key, all auths should use the same number of bits
 KEYBITS = 256
+
+# Versioning
+ALLOWED_VERSIONS = ['v1', 'v2']
+DEFAULT_VERSION = 'v1'
 
 try:
     from local_settings import *

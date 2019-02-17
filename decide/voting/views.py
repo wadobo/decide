@@ -6,7 +6,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 
 from .models import Question, QuestionOption, Voting
-from .serializers import VotingSerializer
+from .serializers import SimpleVotingSerializer, VotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
 
@@ -18,6 +18,12 @@ class VotingView(generics.ListCreateAPIView):
     filter_fields = ('id', )
 
     def get(self, request, *args, **kwargs):
+        version = request.version
+        if version not in settings.ALLOWED_VERSIONS:
+            version = settings.DEFAULT_VERSION
+        if version == 'v2':
+            self.serializer_class = SimpleVotingSerializer
+
         return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
