@@ -170,5 +170,14 @@ try:
 except ImportError:
     print("local_settings.py not found")
 
+# loading jsonnet config
+import json
+from _jsonnet import evaluate_file
+
+
+config = json.loads(evaluate_file("config.jsonnet"))
+for k, v in config.items():
+    vars()[k] = v
+
 
 INSTALLED_APPS = INSTALLED_APPS + MODULES
