@@ -194,6 +194,40 @@ El provisionamiento de ansible está diseñado para funcionar con **ubuntu/bioni
 para funcionar con otras distribuciones es posible que haga falta modificar
 el fichero packages.yml.
 
+Versionado
+----------
+
+El versionado de API está hecho utilizando Django Rest Framework, y la forma
+elegida para este versionado es mediante [parámetros de búsqueda](https://www.django-rest-framework.org/api-guide/versioning/#queryparameterversioning),
+podemos cambiarlo a parámetros en la URL o en el nombre del HOST, hay diferentes
+tipos de versionado disponibles en Django Rest Framework, podemos verlos
+[aqui](https://www.django-rest-framework.org/api-guide/versioning/#versioning).
+
+Nosotros hemos escogido el de por parámetros por ser el más sencillo, y hemos
+creado un ejemplo para que veamos su uso, podemos verlo en voting/views.py
+
+Si nosotros queremos que la salida que nos da la llamada a la API /voting/, sea
+diferente en la versión 2, solo tenemos que comprobar en la versión nos está
+llegando, y hacer lo que queramos, por ejemplo:
+
+
+```
+    def get(self, request, *args, **kwargs):
+        version = request.version  # Con request.version obtenemos la versión
+        if version not in settings.ALLOWED_VERSIONS:  # Versiones permitidas
+            version = settings.DEFAULT_VERSION  # Si no existe: versión por defecto
+        # En el caso de usar la versión 2, usamos un serializador diferente
+        if version == 'v2':
+            self.serializer_class = SimpleVotingSerializer
+        return super().get(request, *args, **kwargs)
+```
+
+Para llamar a las diferentes versiones, haremos lo siguiente:
+
+* /voting/?version=v1
+* /voting/?version=v2
+
+
 Test de estrés con Locust
 -------------------------
 
