@@ -1,9 +1,5 @@
-dist: trusty
-sudo: false
+dist: xenial
 
-before_install:
-  - sudo apt-get update
-  - sudo apt-get install g++
 services:
   - postgresql
 addons:
