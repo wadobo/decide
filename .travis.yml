@@ -4,9 +4,9 @@ sudo: false
 services:
   - postgresql
 addons:
+  postgresql: "9.4"
   apt:
     - g++-8
-  postgresql: "9.4"
 before_script:
   - psql -U postgres -c "create user decide password 'decide'"
   - psql -U postgres -c "create database test_decide owner decide"
