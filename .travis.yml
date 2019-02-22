@@ -1,12 +1,13 @@
 dist: trusty
 sudo: false
 
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install g++
 services:
   - postgresql
 addons:
   postgresql: "9.4"
-  apt:
-    - g++-8
 before_script:
   - psql -U postgres -c "create user decide password 'decide'"
   - psql -U postgres -c "create database test_decide owner decide"
