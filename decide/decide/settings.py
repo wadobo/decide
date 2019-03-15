@@ -171,7 +171,7 @@ except ImportError:
     print("local_settings.py not found")
 
 # loading jsonnet config
-if os.path.exists("config.jsonnnet"):
+if os.path.exists("config.jsonnet"):
     import json
     from _jsonnet import evaluate_file
     config = json.loads(evaluate_file("config.jsonnet"))
