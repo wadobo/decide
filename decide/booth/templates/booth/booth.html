@@ -1,30 +1,70 @@
 {% extends "base.html" %}
 {% load i18n static %}
 
+{% block extrahead %}
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+    <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+{% endblock %}
+
 {% block content %}
-    <h1>{{ voting.id }} - {{ voting.name }}</h1>
+    <div id="app-booth">
+        <!-- Navbar -->
+        <b-navbar type="dark" variant="secondary">
+            <b-navbar-brand tag="h1">Decide</b-navbar-brand>
+                <b-navbar-nav class="ml-auto" v-if="!signup">
+                    <b-nav-item href="#" v-on:click="decideLogout">
+                        {% trans "logout" %}
+                    </b-nav-item>
+                </b-navbar-nav>
+        </b-navbar>
 
-    <div id="login">
-        <label for="username">{% trans "Username" %}</label>
-        <input type="text" id="username" name="username" value=""/>
-        <br/>
-        <label for="password">{% trans "Password" %}</label>
-        <input type="password" id="password" name="username" value=""/>
-        <br/>
-        <input type="submit" value="{% trans "Login" %}" onClick="decideLogin()"/>
-    </div>
+        <b-alert :variant="alertLvl" dismissible v-model="alertShow">
+            [[ alertMsg ]]
+        </b-alert>
 
-    <div id="voting">
-        <a href="#" onClick="decideLogout()">{% trans "logout" %}</a>
-        <h2>{{ voting.question.desc }}</h2>
+        <div class="voting">
+            <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
 
-        {% for opt in voting.question.options %}
-            <label for="q{{opt.number}}">
-                <input id="q{{opt.number}}" type="radio" name="question" value={{opt.number}} /> {{opt.option}}<br/>
-            </label>
-        {% endfor %}
+            <!-- Register -->
+            <b-form @submit="onSubmitLogin" v-if="signup">
+                <b-form-group label="{% trans "Username" %}" label-for="username">
+                    <b-form-input
+                        id="username"
+                        type="text"
+                        v-model="form.username"
+                        autocomplete="username"
+                        required />
+                </b-form-group>
+                <b-form-group label="{% trans "Password" %}" label-for="password">
+                    <b-form-input
+                        id="password"
+                        type="password"
+                        autocomplete="current-password"
+                        v-model="form.password"
+                        required />
+                </b-form-group>
+                <b-button type="submit" variant="primary">{% trans "Login" %}</b-button>
+            </b-form>
 
-        <input type="submit" value="{% trans "Vote" %}" onClick="decideSend()"/>
+            <!-- Voting -->
+            <div v-if="!signup">
+                <h2>[[ voting.question.desc ]]</h2>
+                <b-form-group v-for="opt in voting.question.options" :key="opt.number">
+                    <b-form-radio v-model="selected"
+                                  :id="'q' + opt.number"
+                                  name="question"
+                                  :value="opt.number">
+                        [[ opt.option ]]
+                    </b-form-radio>
+                </b-form-group>
+                <b-button type="button" variant="primary" v-on:click="decideSend">
+                    {% trans "Vote" %}
+                </b-button>
+            </div>
+        </div>
     </div>
 {% endblock %}
 
@@ -40,133 +80,134 @@
     <!-- ElGamal encrypt -->
     <script src="{% static "crypto/elgamal.js" %}"></script>
 
+    <!-- Vuejs -->
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+
     <script>
-        ElGamal.BITS = {{ KEYBITS }};
-        var bigpk = {
-            p: BigInt.fromJSONObject("{{voting.pub_key.p}}"),
-            g: BigInt.fromJSONObject("{{voting.pub_key.g}}"),
-            y: BigInt.fromJSONObject("{{voting.pub_key.y}}"),
-        };
-
-        var token = null;
-        var user = null;
-
-        function postData(url, data) {
-          // Default options are marked with *
-          var fdata = {
-            body: JSON.stringify(data),
-            headers: {
-              'content-type': 'application/json',
-            },
-            method: 'POST',
-          };
-
-          if (token) {
-              fdata.headers['Authorization'] = 'Token ' + token;
-          }
-
-          return fetch(url, fdata)
-          .then(response => {
-            if (response.status === 200) {
-                return response.json();
-            } else {
-                return Promise.reject(response.statusText);
-            }
-          });
-        }
-
-        function decideEncrypt() {
-            var msg = document.querySelector("input[name=question]:checked").value;
-            var bigmsg = BigInt.fromJSONObject(msg);
-            var cipher = ElGamal.encrypt(bigpk, bigmsg);
-            return cipher;
-        }
-
-        function decideSend() {
-            var v = decideEncrypt();
-            var data = {
-                vote: {a: v.alpha.toString(), b: v.beta.toString()},
-                voting: {{voting.id}},
-                voter: user.id,
-                token: token
-            }
-            postData("{% url "gateway" "store" "/" %}", data)
-              .then(data => {
-                alert("{% trans "Conglatulations. Your vote has been sent" %}")
-                console.log(v);
-              })
-              .catch(error => {
-                alert("{% trans "Error: " %}" + error);
-                console.error(error);
-              });
-        }
-
-        function decideLogout() {
-            var data = { token: token };
-            postData("{% url "gateway" "authentication" "/logout/" %}", data);
-
-            token = null;
-            user = null;
-            document.cookie = 'decide=;';
-            panel('login');
-        }
-
-        function decideUser() {
-            var data = { token: token };
-            postData("{% url "gateway" "authentication" "/getuser/" %}", data)
-              .then(data => {
-                user = data;
-                panel('voting');
-              }).catch(error => {
-                alert("{% trans "Error: " %}" + error);
-              });
-        }
-
-        function decideLogin() {
-            var data = {
-                username: document.querySelector("#username").value,
-                password: document.querySelector("#password").value,
-            };
-            postData("{% url "gateway" "authentication" "/login/" %}", data)
-              .then(data => {
-                document.cookie = 'decide='+data.token+';';
-                token = data.token;
-                decideUser();
-              })
-              .catch(error => {
-                alert("{% trans "Error: " %}" + error);
-                console.error(error);
-              });
-        }
-
-        function panel(p) {
-            switch(p) {
-                case 'login':
-                    document.querySelector("#voting").style.display = "none";
-                    document.querySelector("#login").style.display = "block";
-                    break;
-                case 'voting':
-                default:
-                    document.querySelector("#voting").style.display = "block";
-                    document.querySelector("#login").style.display = "none";
-                    break;
-            };
-        }
-
-        function init() {
-            panel('login');
-
-            var cookies = document.cookie.split("; ");
-            cookies.forEach((c) => {
-                var cs = c.split("=");
-                if (cs[0] == 'decide' && cs[1]) {
-                    token = cs[1];
-                    decideUser();
+        var voting = {{voting|safe}};
+        var app = new Vue({
+            delimiters: ['[[', ']]'],
+            el: '#app-booth',
+            data: {
+                keybits: {{ KEYBITS }},
+                voting: voting,
+                selected: "",
+                signup: true,
+                alertShow: false,
+                alertMsg: "",
+                alertLvl: "info",
+                token: null,
+                user: null,
+                form: {
+                    username: '',
+                    password: ''
+                },
+                bigpk: {
+                    p: BigInt.fromJSONObject(voting.pub_key.p.toString()),
+                    g: BigInt.fromJSONObject(voting.pub_key.g.toString()),
+                    y: BigInt.fromJSONObject(voting.pub_key.y.toString()),
                 }
-            });
-        }
+            },
+            beforeMount() {
+                this.init()
+                ElGamal.BITS = this.keybits;
+            },
+            methods: {
+                init() {
+                    var cookies = document.cookie.split("; ");
+                    cookies.forEach((c) => {
+                        var cs = c.split("=");
+                        if (cs[0] == 'decide' && cs[1]) {
+                            this.token = cs[1];
+                            this.getUser();
+                        }
+                    });
+                },
+                postData(url, data) {
+                    // Default options are marked with *
+                    var fdata = {
+                        body: JSON.stringify(data),
+                        headers: {
+                            'content-type': 'application/json',
+                        },
+                        method: 'POST',
+                    };
 
-        init();
+                    if (this.token) {
+                        fdata.headers['Authorization'] = 'Token ' + this.token;
+                    }
+
+                    return fetch(url, fdata)
+                        .then(response => {
+                            if (response.status === 200) {
+                                return response.json();
+                            } else {
+                                return Promise.reject(response.statusText);
+                            }
+                        });
+                },
+                onSubmitLogin(evt) {
+                    evt.preventDefault();
+                    this.postData("{% url "gateway" "authentication" "/login/" %}", this.form)
+                        .then(data => {
+                            document.cookie = 'decide='+data.token+';';
+                            this.token = data.token;
+                            this.getUser();
+                        })
+                        .catch(error => {
+                            this.showAlert("danger", '{% trans "Error: " %}' + error);
+                        });
+                },
+                getUser(evt) {
+                    var data = {token: this.token};
+                    this.postData("{% url "gateway" "authentication" "/getuser/" %}", data)
+                        .then(data => {
+                            this.user = data;
+                            this.signup = false;
+                        }).catch(error => {
+                            this.showAlert("danger", '{% trans "Error: " %}' + error);
+                        });
+                },
+                decideLogout(evt) {
+                    evt.preventDefault();
+                    var data = {token: this.token};
+                    this.postData("{% url "gateway" "authentication" "/logout/" %}", data);
+                    this.token = null;
+                    this.user = null;
+                    document.cookie = 'decide=;';
+                    this.signup = true;
+                },
+                decideEncrypt() {
+                    var bigmsg = BigInt.fromJSONObject(this.selected.toString());
+                    var cipher = ElGamal.encrypt(this.bigpk, bigmsg);
+                    return cipher;
+                },
+                decideSend(evt) {
+                    evt.preventDefault();
+                    var v = this.decideEncrypt();
+                    var data = {
+                        vote: {a: v.alpha.toString(), b: v.beta.toString()},
+                        voting: this.voting.id,
+                        voter: this.user.id,
+                        token: this.token
+                    }
+                    this.postData("{% url "gateway" "store" "/" %}", data)
+                        .then(data => {
+                            this.showAlert("success", '{% trans "Conglatulations. Your vote has been sent" %}');
+                        })
+                        .catch(error => {
+                            this.showAlert("danger", '{% trans "Error: " %}' + error);
+                        });
+                },
+                showAlert(lvl, msg) {
+                    this.alertLvl = lvl;
+                    this.alertMsg = msg;
+                    this.alertShow = true;
+                }
+            },
+        })
     </script>
 </body>
 {% endblock %}
