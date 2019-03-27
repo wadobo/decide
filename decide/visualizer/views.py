@@ -1,3 +1,4 @@
+import json
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.http import Http404
@@ -14,7 +15,7 @@ class VisualizerView(TemplateView):
 
         try:
             r = mods.get('voting', params={'id': vid})
-            context['voting'] = r[0]
+            context['voting'] = json.dumps(r[0])
         except:
             raise Http404
 
