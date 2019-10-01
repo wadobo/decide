@@ -19,6 +19,7 @@ esta autenticación ha de ser segura, de tal forma que se reduzca la
 posibilidad de fraude, suplantación de identidad, etc.
 
 Posibles formas de autenticación:
+
     * Usuario / Contraseña
     * Enlace único por correo electrónico
     * Enlace único por SMS o sistema de mensajería (whatsapp, telegram, etc)
