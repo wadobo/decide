@@ -8,6 +8,8 @@ before_script:
   - psql -U postgres -c "create user decide password 'decide'"
   - psql -U postgres -c "create database test_decide owner decide"
   - psql -U postgres -c "ALTER USER decide CREATEDB"
+  -cd decide
+  -python3 ./image.py migrate
 language: python
 python:
   - "3.6"
@@ -15,7 +17,4 @@ install:
   - pip install -r requirements.txt
   - pip install codacy-coverage
 script:
-  - cd decide
-  - coverage run --branch --source=. ./manage.py test --keepdb --with-xunit
-  - coverage xml
-  - python-codacy-coverage -r coverage.xml
+  - python3 ./manage.py test
