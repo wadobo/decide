@@ -14,9 +14,11 @@ python:
 install:
   - pip install -r requirements.txt
   - pip install codacy-coverage
+  - pip install flake8
 script:
   - cd decide
   - coverage run --branch --source=. ./manage.py test --keepdb --with-xunit
   - coverage xml
   - cat coverage.xml
   - python-codacy-coverage -r coverage.xml
+  - flake8 .
