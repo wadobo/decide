@@ -9,7 +9,7 @@ before_script:
   - psql -U postgres -c "create database test_decide owner decide"
   - psql -U postgres -c "ALTER USER decide CREATEDB"
   - cd decide
-  - cp local_setting.example.py local_settings.py
+  - cp local_settings.example.py local_settings.py
   - python3 ./manage.py migrate
 language: python
 python:
