@@ -9,3 +9,5 @@ django-rest-swagger==2.2.0
 coverage==4.5.2
 django-nose==1.4.6
 jsonnet==0.12.1
+django-heroku
+gunicorn
