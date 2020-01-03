@@ -30,16 +30,22 @@
                             <th>Opción</th>
                             <th>Puntuación</th>
                             <th>Votos</th>
+                            <th>porcentaje</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="opt in voting.postproc" :key="opt.number">
                             <th>[[opt.option]]</th>
                             <td>[[opt.postproc]]</td>
+                           
                             <td class="text-muted">[[opt.votes]]</td>
                         </tr>
                     </tbody>
                 </table>
+                
+                [[porcentaje]]
+               <voting class="id"></voting>
+
             </div>
 
         </div>

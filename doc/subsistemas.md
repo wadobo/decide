@@ -1,4 +1,4 @@
-Definimos diferentes subsistemas que son más o menos independientes entre
+Decide está compuesto por diferentes subsistemas que son más o menos independientes entre
 sí y que se interconectan implementando una API concreta.
 
 Cada subsistema se encarga de una tarea concreta en el sistema de voto.
@@ -19,7 +19,6 @@ esta autenticación ha de ser segura, de tal forma que se reduzca la
 posibilidad de fraude, suplantación de identidad, etc.
 
 Posibles formas de autenticación:
-
     * Usuario / Contraseña
     * Enlace único por correo electrónico
     * Enlace único por SMS o sistema de mensajería (whatsapp, telegram, etc)
@@ -35,7 +34,7 @@ importante a la hora de definir una votación y de controlar quién ha
 votado y quién no.
 
 El censo está relacionado con la autenticación, pero no es lo mismo, el
-censo es la autorización para votar en una votación en concreto.
+censo es la autorización para votar en una votación en concreto, es decir, puede estar autorizado a entrar en el sistema a través de la autenticación, pero puede que no tengas autorización para votar en una determinada votación. 
 
 Votaciones
 ----------
@@ -96,43 +95,3 @@ gráficas y tablas.
 También se encargará de generar los diferentes informes necesarios de estos
 resultados, ya sea en formato web, pdf, texto planto, etc.
 
-
-
-Otras agrupaciones
-==================
-
-Además de estos subsistemas básicos hay tareas o desarrollos que no
-pertenecen a ninguno de ellos y se pueden eglobar en los siguientes grupos:
-
-Integración
------------
-
-Integración de todos los subsistemas para conseguir un único proyecto
-funcional. Integración continua para ir integrando los diferentes cambios
-de los subsistemas y detectar incompatibilidades lo antes posible, además
-de pruebas de integración.
-
-Seguridad
----------
-
-Control de la seguridad de una votación completa, de todo el sistema de
-voto o de partes de la votación.
-
-Documentación
--------------
-
-Documentación para votantes, administradores de votaciones y también
-documentación de desarrollo.
-
-Traducciones
-------------
-
-Traducción de la interfaz a diferentes idiomas.
-
-Diseño y usabilidad
--------------------
-
-Estudio y diseño de la interfaz de usuario atendiendo a criterios de diseño
-y también de usabilidad para que el proceso de votación sea lo más
-intuitivo posible, accesible para todo el mundo y que la herramienta no sea
-un problema si no una solución.
