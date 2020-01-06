@@ -21,4 +21,4 @@ script:
   - coverage xml
   - cat coverage.xml
   - python-codacy-coverage -r coverage.xml
-  - flake8 .
+
