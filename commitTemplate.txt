@@ -1,0 +1,17 @@
+# Types available: feature, bugfix, docs, style, test, other
+*Type of the problem: 
+-----------------------------------------------------------------------
+# Subject of the problem (a brief resume of the problem) 50 char max
+*Subject:
+
+
+-----------------------------------------------------------------------
+# Problem that pretend to solve, 100 char max
+*Problem:
+
+
+
+
+-----------------------------------------------------------------------
+# Solution, if there's one done or planned
+*Solution:
