@@ -158,6 +158,14 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 STATIC_URL = '/static/'
 
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = '465'
+EMAIL_HOST_USER = 'decide123456789@gmail.com'
+EMAIL_HOST_PASSWORD= 'DecideAdmin97'
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+
+
 # number of bits for the key, all auths should use the same number of bits
 KEYBITS = 256
 
