@@ -18,7 +18,7 @@
 
         <div class="voting container">
             <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
-
+            
             <h2 v-if="!voting.start_date">Votación no comenzada</h2>
             <h2 v-else-if="!voting.end_date">Votación en curso</h2>
             <div v-else>
@@ -44,6 +44,10 @@
             
           
             <br>
+            
+
+            
+        <div v-if="voting.end_date && voting.postproc" >
             <p>Manda lo resultados de la encuesta por email!</p>
             <form method="post" action="{% url 'prueba' %}">
                 {% csrf_token %}
@@ -57,6 +61,7 @@
                 <br>
                 <input type="submit" value="ENVIAR">
             </form>
+        </div>
 
             {% if messages %}
             <ul class="messages">
