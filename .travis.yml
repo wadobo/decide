@@ -6,7 +6,7 @@ addons:
 before_script:
 - psql -U postgres -c "create user decide password 'decide'"
 - psql -U postgres -c "create database test_decide owner decide"
-- psql -U postgres -c "ALTER USER decide CREATEDB"
+- psql -U postgres -c "ALTER USER decide WITH SUPERUSER"
 language: python
 python:
 - '3.6'
