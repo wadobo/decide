@@ -7,12 +7,19 @@
     <link type="text/css" rel="stylesheet"
          href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
     <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/jspdf@latest/dist/jspdf.min.js"></script>
+
+        
+        
+    
 {% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.16.min.css" type="text/css" />
 <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
 <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+
 
 <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 <script type="text/javascript">
@@ -47,11 +54,21 @@
             );
         graph.render();
 
-        document.getElementById("csv").addEventListener("click", function(){
-  downloadCSV({ filename: "datos_grafica_votacion.csv", chart: graph })
-});
-}
+        var canvas = $("#graphContainer .canvasjs-chart-canvas").get(0);
+        var dataURL = canvas.toDataURL();
+        console.log(dataURL);
+        
+        $("#csv").click (function(){
+        downloadCSV({ filename: "datos_grafica_votacion.csv", chart: graph })
+        });
 
+        $("#pdf").click(function(){
+        var pdf = new jsPDF();
+        pdf.addImage(dataURL, 'JPEG', 100, 100, 100, 100 );
+        pdf.save("grafica.pdf");
+        }); 
+        
+}
 
 function convertChartDataToCSV(args) {  
   var res, ctr, keys, delimitadorCol, delimitadorLin, data;
@@ -146,8 +163,8 @@ function downloadCSV(args) {
                 </h3>
             {% endif %}
             <button id="csv">Descargar gráfica en CSV</button>
-            <div id="graphContainer" style="height: 300px; width: 100%; background-color:#99bbff;">
-            </div>
+            <button id="pdf">Descargar gráfica en PDF</button>
+         <div id="graphContainer" style="height: 300px; width: 100%; background-color:#99bbff;"></div>
                     <div class="votingNumericData">
                         <table class="table table-bordered table-striped" >
                         <thead>
