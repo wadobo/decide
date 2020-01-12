@@ -46,6 +46,65 @@
                 }
             );
         graph.render();
+
+        document.getElementById("csv").addEventListener("click", function(){
+  downloadCSV({ filename: "datos_grafica_votacion.csv", chart: graph })
+});
+}
+
+
+function convertChartDataToCSV(args) {  
+  var res, ctr, keys, delimitadorCol, delimitadorLin, data;
+
+  data = args.data || null;
+  if (data == null || !data.length) {
+    return null;
+  }
+
+ delimitadorCol = args.delimitadorCol || ',';
+  delimitadorLin = args.delimitadorLin || '\n';
+
+  keys = Object.keys(data[0]);
+
+  res = '';
+  res += keys.join(delimitadorCol);
+  res += delimitadorLin;
+
+  data.forEach(function(item) {
+    ctr = 0;
+    keys.forEach(function(key) {
+      if (ctr > 0) res += delimitadorCol;
+      res += item[key];
+      ctr++;
+    });
+    res += delimitadorLin;
+  });
+  return res;
+}
+
+function downloadCSV(args) {
+  var data, filename, link;
+  var csv = "";
+  for(var i = 0; i < args.chart.options.data.length; i++){
+    csv += convertChartDataToCSV({
+      data: args.chart.options.data[i].dataPoints
+    });
+  }
+  if (csv == null) return;
+
+  filename = args.filename || 'chart-data.csv';
+
+  if (!csv.match(/^data:text\/csv/i)) {
+    csv = 'data:text/csv;charset=utf-8,' + csv;
+  }
+ 
+  data = encodeURI(csv);
+  link = document.createElement('a');
+  link.setAttribute('href', data);
+  link.setAttribute('download', filename);
+  document.body.appendChild(link); // Required for FF
+    link.click();
+    document.body.removeChild(link);  
 }
 </script>
 
@@ -86,7 +145,7 @@
                     {% trans 'cerrada' %}
                 </h3>
             {% endif %}
-            <button id=CSV">Descargar gráfica en CSV</button>
+            <button id="csv">Descargar gráfica en CSV</button>
             <div id="graphContainer" style="height: 300px; width: 100%; background-color:#99bbff;">
             </div>
                     <div class="votingNumericData">
