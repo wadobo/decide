@@ -10,56 +10,114 @@
 {% endblock %}
 
 {% block content %}
-    <div id="app-visualizer">
-        <!-- Navbar -->
-        <b-navbar type="dark" variant="secondary">
-            <b-navbar-brand tag="h1">Decide</b-navbar-brand>
-        </b-navbar>
-        [[ voting ]]
+<link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.16.min.css" type="text/css" />
+<link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+<link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script type="text/javascript">
+
+    window.onload = function() {
+        // Diccionario el cual contendra la votacion con key{option} : value{votes}
+        var talliedPoll = [];
+
+        {% for option in voting.postproc %}
+            talliedPoll.push({
+                    label: "{{option.option}}",
+                    y: {{option.votes}}
+            });
+        {% endfor %}
+
+
+        var graph = new CanvasJS.Chart("graphContainer",
+                {
+                    backgroundColor: "#e6eeff",
+                    title: {
+                        text: null
+                    },
+                    data: [{
+                        // el atributo tipo de data nos permite elegir la forma según la cual queremos construir la grafica
+                        type: "pie",
+                        startAngle: 90,
+                        yValueFormatString: "##0",
+                        indexLabel: "{label} {y}",
+                        dataPoints: talliedPoll
+                    }]
+                }
+            );
+        graph.render();
+}
+</script>
+
+<div>
+    <section>
         <div class="voting container">
-            <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
-            <h2 v-if="!voting.start_date">Votación no comenzada</h2>
-            <h2 v-else-if="!voting.end_date">Votación en curso</h2>
-            <div v-else>
-                <h2 class="heading">Resultados:</h2>
-                
-                <table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Opción</th>
-                            <th>Puntuación</th>
-                            <th>Votos</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="opt in voting.postproc" :key="opt.number">
-                            <th>[[opt.option]]</th>
-                            <td>[[opt.postproc]]</td>
-                            <td class="text-muted">[[opt.votes]]</td>
-                        </tr>
-                    </tbody>
-                </table>
+        <b-navbar type="dark" variant="secondary"></b-navbar>
+            <h1 class="title">Titulo de la visualizacion aún no definido</h1>
+            <!-- Respuesta del modulo de votación -> lo convertimos a JSON y así tenemos un diccionario indexable a sus elementos
+            <key,value> (visión global de la respuesta JSON)
+                                {{voting}}
+            -->
+            <div class="votingGeneralInformation">
+                <h2 class="votingName">
+                   Nombre: {{voting.name}}
+                </h2>
+                <h3 >
+                    Inicio: {{voting.start_date}}
+                </h3>
+                <h3 >
+                    Finalización: {{voting.end_date}}
+                </h3>
+                <h2>ID de la votación: {{voting.id}}</h2>
             </div>
-
+        </b-navbar>
         </div>
-    </div>
-{% endblock %}
+        <div class="votingMainInformation">
+            {% if not voting.start_date %}
+                <h3 style="text-align: center;">Estado de la votación:
+                    {% trans 'no ha comenzado aún' %}
+                </h3>
+            {% elif not voting.end_date %}
+                <h3 style="text-align: center;">Estado de la votación:
+                    {% trans 'en curso' %}
+                </h3>
+            {% elif voting.end_date %}
+                <h3 style="text-align: center;">Estado de la votación:
+                    {% trans 'cerrada' %}
+                </h3>
+            {% endif %}
+            <div id="graphContainer" style="height: 300px; width: 100%; background-color:#99bbff;">
+            </div>
+                    <div class="votingNumericData">
+                        <table class="table table-bordered table-striped" >
+                        <thead>
+                            <tr>
+                                <td class="option" style="text-align: left;">
+                                    Opción
+                                </td>
+                                <td class="postprocVots" style="text-align: left;">
+                                    Número de opción
+                                </td>
+                                <td class="votesTotalAmount" style="text-align: left;">
+                                    Votos
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for opt in voting.postproc %}
+                                <tr>
+                                    <td>{{opt.option}}</td>
+                                    <td style="text-align: center;">{{opt.number}}</td>
+                                    <td style="text-align: center;">{{opt.votes}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        </table>
+                       
+                    </div>
 
-{% block extrabody %}
-    <!-- Vuejs -->
-    <script src="https://unpkg.com/vue"></script>
-    <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
-    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
 
-    <script>
-        var voting = {{voting|safe}};
-        var app = new Vue({
-            delimiters: ['[[', ']]'],
-            el: '#app-visualizer',
-            data: {
-                voting: voting
-            }
-        })
-    </script>
-</body>
+
+    </section>
+</div>
 {% endblock %}
