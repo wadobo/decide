@@ -40,14 +40,6 @@ class VisualizerView(TemplateView):
             raise Http404
 
         return context
-    def prueba(self,request):
-        
-        stringprueba = '''
-                [ { "votes": 1, "number": 2, "option": "dos", "postproc": 1 },
-                { "votes": 1, "number": 3, "option": "trs", "postproc": 1 }, 
-                { "votes": 0, "number": 1, "option": "uno", "postproc": 0 } ] 
-                '''
-        return stringprueba
 
 def prueba(request):
         receptor = request.POST['receptor']
