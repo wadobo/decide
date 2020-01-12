@@ -9,7 +9,6 @@ from django.contrib import messages
 
 from base import mods
 
-
 class VisualizerView(TemplateView):
     template_name = 'visualizer/visualizer.html'
 
@@ -20,7 +19,9 @@ class VisualizerView(TemplateView):
         try:
             r = mods.get('voting', params={'id': vid})
             context['voting'] = json.dumps(r[0])
-            listaVotaciones = from_json(self.prueba(self))
+
+            listaVotaciones = from_json(self.pruebaJson(self))
+
             i=0
             votos=0
             while i < len(listaVotaciones) :
@@ -40,6 +41,15 @@ class VisualizerView(TemplateView):
             raise Http404
 
         return context
+
+    def pruebaJson(self,request):
+        
+        stringprueba = '''
+                [ { "votes": 1, "number": 2, "option": "dos", "postproc": 1 },
+                { "votes": 1, "number": 3, "option": "trs", "postproc": 1 }, 
+                { "votes": 0, "number": 1, "option": "uno", "postproc": 0 } ] 
+                '''
+        return stringprueba
 
 def prueba(request):
         receptor = request.POST['receptor']
