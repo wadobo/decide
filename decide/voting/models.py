@@ -96,8 +96,6 @@ class Voting(models.Model):
         self.save()
 
         self.do_postproc()
-    
-
 
     def do_postproc(self):
         tally = self.tally
