@@ -6,6 +6,8 @@ from django.core.mail import send_mail
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib import messages
+import ast
+
 
 from base import mods
 
@@ -19,11 +21,12 @@ class VisualizerView(TemplateView):
 
         try:
             r = mods.get('voting', params={'id': vid})
-            context['voting'] = json.dumps(r[0])
+            context['voting'] = r[0]
         except:
             raise Http404
 
         return context
+
 
 
 
@@ -32,8 +35,11 @@ def prueba(request):
         encuesta = request.POST['encuesta'] 
         encuestaID = request.POST['encuestaID']  
         resultadosEncuesta = request.POST['resultadosEncuesta']
+        transformado = json.dumps(resultadosEncuesta)
+        transformado2 = ast.literal_eval(transformado)
+        transformado2 = transformado2.replace("\'", "\"")
 
-        fromjson = from_json(resultadosEncuesta)
+        fromjson = from_json(transformado2)
         texto = ""
         for x in range(len(fromjson)):
             texto = texto + str(fromjson[x]) + "\n"
@@ -76,4 +82,3 @@ def from_json(json_string):
         for u in votaciones_data:
             votaciones_list.append(ResultadosVotacion(**u))
         return votaciones_list
-
