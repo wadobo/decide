@@ -46,7 +46,8 @@
                     </tbody>
                 </table>
                 <p>Los porcentaje de la votacion en orden son : </br> {%for int in prueba %} {{int}} </br> {% endfor %} </p>
-
+                
+              
             </div>
             
           
@@ -54,37 +55,7 @@
             
 
             
-        <div v-if="voting.end_date && voting.postproc" >
-            <p>Manda lo resultados de la encuesta por email!</p>
-            <form method="post" action="{% url 'prueba' %}">
-                {% csrf_token %}
-                Correo:<br>
-                <input type="email" name="receptor" placeholder="example@host.com">
-
-                <textarea name="resultadosEncuesta" style="display: none;" >[[voting.postproc]]</textarea>
-               
-                <textarea name="encuesta" style="display: none;" >[[ voting.name ]]</textarea>
-                <textarea name="encuestaID" style="display: none;" >[[ voting.id ]]</textarea>
-                <br>
-                <input type="submit" value="ENVIAR">
-            </form>
-        </div>
-
-            {% if messages %}
-            <ul class="messages">
-                {% for msg in messages %} 
-
-                <li>
-                    <div class="alert alert-{{msg.level_tag}}" role="alert">
-                              {{msg.message}}
-                    </div>
-                </li>
-                {% endfor %}
-
-            </ul>
-            {% endif %}
-
-            
+       
 
 
 
