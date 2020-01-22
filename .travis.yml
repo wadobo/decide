@@ -16,3 +16,4 @@ script:
 - cd decide
 - cp travis_local_settings.py local_settings.py
 - python ./manage.py test --keepdb
+
