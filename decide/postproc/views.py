@@ -381,12 +381,3 @@ class PostProcView(APIView):
             return self.metodoHuntington_Hill(opts,numEscanyos)
 
         return Response({})
-
-    def metodoHondt(self, data):
-        t = data.get('type')
-        lista = data.get('options')
-        escañosTotales = data.get('numEscanyos')
-        if(t == 'HONDT'):
-            return self.ley_de_hondt(lista,escañosTotales)
-        else:
-            return {}

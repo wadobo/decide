@@ -6,7 +6,7 @@ addons:
 before_script:
 - psql -U postgres -c "create user decide password 'decide'"
 - psql -U postgres -c "create database test_decide owner decide"
-- psql -U postgres -c "ALTER USER decide WITH SUPERUSER"
+- psql -U postgres -c "ALTER USER decide CREATEDB"
 language: python
 python:
 - '3.6'
@@ -16,10 +16,3 @@ script:
 - cd decide
 - cp travis_local_settings.py local_settings.py
 - python ./manage.py test --keepdb
-deploy:
-  provider: heroku
-  app:
-    domin: probandozapdos
-  strategy: git
-  api_key:
-    secure: PFMTWn3f1DaTyHEuBETVw88IAEJX3DWshDcSJIRD8CDO2cqxGxMzmwVKZbu/mgkq3kWOIabV1yfzjIzxOjODGpkJAZ3HElfWEKVyb6jXz9X3cxMUqG0PRdhERA6n6+eH107YNbm2pOFTejz/EwLRtuot0FmP/54az5uP6gYGh2cm8PmREU347f3+RJ0RveDIc6bb98rXmwYt/2904x8/Qm+oMI6IUStW8RSHenZ8ogzQB1yOsbmTbtK6JXtHtO+fCo/+42vw96RHhCKNmAAAnB8vQ43jvJqUtQGyrmvp01nkF+KIAwDp6lDjm5+8HErq91cUVx4f/XpwLCa5J01oCxH+OVba7DE0rc2mIuWmakfnw9ONx/P5QBXavZJI1p/q4PgkZpMJPjS4of8o6IaNx5MDbBf90FZTZjXCg36WOoD6a7xipQ1nxzeoZY3V0O5B/7qkjPonaVo+EnKHtYdS7uDn5q0souaqX7HUr4Rc2bVEiCZJgE8kfy2xubkxSSVFzwwma53yilYauORM7zpHDlSHrFndj6gpp+n/615QhEdh8FVz83qc0DPtte232eOh0r668SzPqKkzbxZhIyHckh9uL1ymiPHFExLexki5pqAdu7oeu2SfxB3meQHdidSNZuSvhNl/rar4A4ZgBurrDeDKQV3RQtNXJVL+5xvW0TM=
