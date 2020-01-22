@@ -128,6 +128,7 @@ function downloadCSV(args) {
 <div>
     <section>
         <div class="voting container">
+
         <b-navbar type="dark" variant="secondary"></b-navbar>
             <h1 class="title">Titulo de la visualizacion aún no definido</h1>
             <!-- Respuesta del modulo de votación -> lo convertimos a JSON y así tenemos un diccionario indexable a sus elementos
@@ -145,6 +146,7 @@ function downloadCSV(args) {
                     Finalización: {{voting.end_date}}
                 </h3>
                 <h2>ID de la votación: {{voting.id}}</h2>
+
             </div>
         </b-navbar>
         </div>
@@ -191,13 +193,25 @@ function downloadCSV(args) {
                             {% endfor %}
                         </tbody>
                         </table>
-                       
+                        <p>Los porcentaje de la votacion en orden son : </br> {%for int in prueba %} {{int}} </br> {% endfor %} </p>
+                
+              
                     </div>
 
 
                      
           
             <br>
+            
+
+            
+       
+
+
+
+
+            
+        <div v-if="voting.end_date && voting.postproc" >
             <p>Manda lo resultados de la encuesta por email!</p>
             <form method="post" action="{% url 'prueba' %}">
                 {% csrf_token %}
@@ -210,6 +224,7 @@ function downloadCSV(args) {
                 <br>
                 <input type="submit" value="ENVIAR">
             </form>
+        </div>
 
             {% if messages %}
             <ul class="messages">
