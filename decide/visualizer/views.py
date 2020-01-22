@@ -21,6 +21,25 @@ class VisualizerView(TemplateView):
         try:
             r = mods.get('voting', params={'id': vid})
             context['voting'] = r[0]
+            hola= str(ResultadosVotacion2.from_json2(json.dumps(r[0])))
+            hola = hola.replace("'", "\"")
+            context['voting2'] = hola
+            listaVotaciones = from_json(hola)
+
+            i=0
+            votos=0
+            while i < len(listaVotaciones) :
+                votos= votos + listaVotaciones[i].votes
+                i=i+1
+            j=0
+            listMedia=[]
+            while j < len(listaVotaciones) :
+        
+                media = listaVotaciones[j].votes / votos
+                listMedia.append(media)
+                j=j+1
+            context['prueba'] = listMedia
+            context['contador'] = votos
         except:
             raise Http404
 
@@ -86,3 +105,29 @@ def from_json(json_string):
         for u in votaciones_data:
             votaciones_list.append(ResultadosVotacion(**u))
         return votaciones_list
+class ResultadosVotacion2:
+    def __init__(self,id,name,desc,question,start_date,end_date,pub_key,auths , tally, postproc):
+
+        self.id = id
+        self.name = name
+        self.desc = desc
+        self.question = question
+        self.start_date = start_date
+        self.end_date = end_date
+        self.pub_key = pub_key
+        self.auths = auths
+        self.tally = tally
+        self.postproc = postproc
+
+    
+
+    def __repr__(self):
+        
+        return f'{self.postproc}' 
+
+    @classmethod
+    def from_json2(cls,json_string):
+        
+        votaciones_data = json.loads(json_string)
+        
+        return cls(**votaciones_data) 
