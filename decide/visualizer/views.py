@@ -48,7 +48,7 @@ def prueba(request):
         
         
         send_mail('Resultados de la encuesta "' + encuesta + '" de DECIDE',
-        'Se adjuntan a contuniacion los resultado de la encuesta "'+ encuesta + '":\n\n' + texto,
+        'Se adjuntan a continuacion los resultado de la encuesta "'+ encuesta + '":\n\n' + texto,
         'decide123456789@gmail.com',
         [receptor],
         fail_silently = False)
