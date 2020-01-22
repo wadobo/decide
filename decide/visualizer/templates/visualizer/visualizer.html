@@ -1,108 +1,201 @@
 {% extends "base.html" %}
 {% load i18n static %}
 
-    {% block content %}
+{% block extrahead %}
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+    <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/jspdf@latest/dist/jspdf.min.js"></script>
 
-    <link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.16.min.css" type="text/css" />
-    <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
-    <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+        
+        
+    
+{% endblock %}
 
-    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
-    <script type="text/javascript">
-
-        window.onload = function() {
-            // Diccionario el cual contendra la votacion con key{option} : value{votes}
-            var talliedPoll = [];
-
-            {% for option in voting.postproc %}
-                talliedPoll.push({
-                        label: "{{option.option}}",
-                        y: {{option.votes}}
-                });
-            {% endfor %}
-
-
-            var graph = new CanvasJS.Chart("graphContainer",
-                    {
-                        backgroundColor: "#e6eeff",
-                        title: {
-                            text: null
-                        },
-                        data: [{
-                            // el atributo tipo de data nos permite elegir la forma según la cual queremos construir la grafica
-                            type: "pie",
-                            startAngle: 90,
-                            yValueFormatString: "##0",
-                            indexLabel: "{label} {y}",
-                            dataPoints: talliedPoll
-                        }]
-                    }
-                );
-            graph.render();
-        }
+{% block content %}
+<link rel="stylesheet" href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.16.min.css" type="text/css" />
+<link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+<link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
 
 
-    </script>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script type="text/javascript">
 
-    <div>
-        <section>
-            <div class="undefined">
-                <h1 class="title">Titulo de la visualizacion aún no definido</h1>
-                <!-- Respuesta del modulo de votación -> lo convertimos a JSON y así tenemos un diccionario indexable a sus elementos 
-                <key,value> (visión global de la respuesta JSON)
-                                    {{voting}}
-                -->
-                <div class="votingGeneralInformation">
-                    <h2 class="votingName">
-                        {{voting.name}} : 
-                        Inicio/Finalización: {{voting.start_date}}/{{voting.end_date}}
-                    </h2>
-                    <h2>ID de la votación: {{voting.id}}</h2>
-                </div>
+    window.onload = function() {
+        // Diccionario el cual contendra la votacion con key{option} : value{votes}
+        var talliedPoll = [];
+
+        {% for option in voting.postproc %}
+            talliedPoll.push({
+                    label: "{{option.option}}",
+                    y: {{option.votes}}
+            });
+        {% endfor %}
+
+
+        var graph = new CanvasJS.Chart("graphContainer",
+                {
+                    backgroundColor: "#e6eeff",
+                    title: {
+                        text: null
+                    },
+                    data: [{
+                        // el atributo tipo de data nos permite elegir la forma según la cual queremos construir la grafica
+                        type: "pie",
+                        startAngle: 90,
+                        yValueFormatString: "##0",
+                        indexLabel: "{label} {y}",
+                        dataPoints: talliedPoll
+                    }]
+                }
+            );
+        graph.render();
+
+        var canvas = $("#graphContainer .canvasjs-chart-canvas").get(0);
+        var dataURL = canvas.toDataURL();
+        console.log(dataURL);
+        
+        $("#csv").click (function(){
+        downloadCSV({ filename: "datos_grafica_votacion.csv", chart: graph })
+        });
+
+        $("#pdf").click(function(){
+        var pdf = new jsPDF();
+        pdf.addImage(dataURL, 'JPEG', 100, 100, 100, 100 );
+        pdf.save("grafica.pdf");
+        }); 
+        
+}
+
+function convertChartDataToCSV(args) {  
+  var res, ctr, keys, delimitadorCol, delimitadorLin, data;
+
+  data = args.data || null;
+  if (data == null || !data.length) {
+    return null;
+  }
+
+ delimitadorCol = args.delimitadorCol || ',';
+  delimitadorLin = args.delimitadorLin || '\n';
+
+  keys = Object.keys(data[0]);
+
+  res = '';
+  res += keys.join(delimitadorCol);
+  res += delimitadorLin;
+
+  data.forEach(function(item) {
+    ctr = 0;
+    keys.forEach(function(key) {
+      if (ctr > 0) res += delimitadorCol;
+      res += item[key];
+      ctr++;
+    });
+    res += delimitadorLin;
+  });
+  return res;
+}
+
+function downloadCSV(args) {
+  var data, filename, link;
+  var csv = "";
+  for(var i = 0; i < args.chart.options.data.length; i++){
+    csv += convertChartDataToCSV({
+      data: args.chart.options.data[i].dataPoints
+    });
+  }
+  if (csv == null) return;
+
+  filename = args.filename || 'chart-data.csv';
+
+  if (!csv.match(/^data:text\/csv/i)) {
+    csv = 'data:text/csv;charset=utf-8,' + csv;
+  }
+ 
+  data = encodeURI(csv);
+  link = document.createElement('a');
+  link.setAttribute('href', data);
+  link.setAttribute('download', filename);
+  document.body.appendChild(link); // Required for FF
+    link.click();
+    document.body.removeChild(link);  
+}
+</script>
+
+<div>
+    <section>
+        <div class="voting container">
+        <b-navbar type="dark" variant="secondary"></b-navbar>
+            <h1 class="title">Titulo de la visualizacion aún no definido</h1>
+            <!-- Respuesta del modulo de votación -> lo convertimos a JSON y así tenemos un diccionario indexable a sus elementos
+            <key,value> (visión global de la respuesta JSON)
+                                {{voting}}
+            -->
+            <div class="votingGeneralInformation">
+                <h2 class="votingName">
+                   Nombre: {{voting.name}}
+                </h2>
+                <h3 >
+                    Inicio: {{voting.start_date}}
+                </h3>
+                <h3 >
+                    Finalización: {{voting.end_date}}
+                </h3>
+                <h2>ID de la votación: {{voting.id}}</h2>
             </div>
-            <div class="votingMainInformation">
-                {% if not voting.start_date %}
-                    <h3 style="text-align: center;">Estado de la votación:
-                        {% trans 'no ha comenzado aún' %}
-                    </h3>
-                {% elif not voting.end_date %}
-                    <h3 style="text-align: center;">Estado de la votación:
-                        {% trans 'en curso' %}
-                    </h3>
-                {% elif voting.end_date %}
-                    <h3 style="text-align: center;">Estado de la votación:
-                        {% trans 'cerrada' %}
-                    </h3>
-                {% endif %}
-                <div id="graphContainer" style="height: 300px; width: 100%; background-color:#99bbff;">
-                </div>
-                        <div class="votingNumericData">
-                            <table class="pairOption_Votes">
+        </b-navbar>
+        </div>
+        <div class="votingMainInformation">
+            {% if not voting.start_date %}
+                <h3 style="text-align: center;">Estado de la votación:
+                    {% trans 'no ha comenzado aún' %}
+                </h3>
+            {% elif not voting.end_date %}
+                <h3 style="text-align: center;">Estado de la votación:
+                    {% trans 'en curso' %}
+                </h3>
+            {% elif voting.end_date %}
+                <h3 style="text-align: center;">Estado de la votación:
+                    {% trans 'cerrada' %}
+                </h3>
+            {% endif %}
+
+            <button id="csv">Descargar gráfica en CSV</button>
+            <button id="pdf">Descargar gráfica en PDF</button>
+         <div id="graphContainer" style="height: 300px; width: 100%; background-color:#99bbff;"></div>
+                    <div class="votingNumericData">
+                        <table class="table table-bordered table-striped" >
+                        <thead>
+                            <tr>
+                                <td class="option" style="text-align: left;">
+                                    Opción
+                                </td>
+                                <td class="postprocVots" style="text-align: left;">
+                                    Número de opción
+                                </td>
+                                <td class="votesTotalAmount" style="text-align: left;">
+                                    Votos
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for opt in voting.postproc %}
                                 <tr>
-                                    <td class="option" style="text-align: left;">
-                                        Opción
-                                    </td>
-                                    <td class="postprocVots" style="text-align: left;">
-                                        Votos postprocesados
-                                    </td>
-                                    <td class="votesTotalAmount" style="text-align: left;">
-                                        Votos taltes
-                                    </td>
+                                    <td>{{opt.option}}</td>
+                                    <td style="text-align: center;">{{opt.number}}</td>
+                                    <td style="text-align: center;">{{opt.votes}}</td>
                                 </tr>
-                                {% for opt in voting.postproc %}
-                                    <tr>
-                                        <td>{{opt.option}}</td>
-                                        <td style="text-align: center;">{{opt.number}}</td>
-                                        <td style="text-align: center;">{{opt.votes}}</td>
-                                    </tr>
-                                {% endfor %}
-                            </table>
-                            
-                        </div>
+                            {% endfor %}
+                        </tbody>
+                        </table>
+                       
+                    </div>
 
 
 
-        </section>
-    </div>
-    {% endblock %}
-
+    </section>
+</div>
+{% endblock %}
