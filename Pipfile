@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+Django = "==2.0.12"
+pycryptodome = "==3.6.6"
+djangorestframework = "==3.9.1"
+django-cors-headers = "==2.1.0"
+requests = "==2.20.0"
+django-filter = "==1.1.0"
+psycopg2-binary = "*"
+django-rest-swagger = "==2.2.0"
+coverage = "==4.5.2"
+django-nose = "==1.4.6"
+jsonnet = "==0.12.1"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"
