@@ -88,6 +88,7 @@ venv/
 ENV/
 Pipfile
 
+
 # Spyder project settings
 .spyderproject
 .spyproject
