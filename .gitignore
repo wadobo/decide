@@ -55,6 +55,7 @@ coverage.xml
 local_settings.py
 Pipfile
 .idea
+.idea/misc.xml
 
 # Flask stuff:
 instance/
