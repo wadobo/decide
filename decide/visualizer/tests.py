@@ -3,7 +3,6 @@
 from django.test import TestCase
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
-from bs4 import BeautifulSoup
 import requests
 import unittest
 import re
