@@ -72,6 +72,18 @@ MODULES = [
 
 BASEURL = 'http://localhost:8000'
 
+APIS = {
+    'authentication': BASEURL,
+    'base': BASEURL,
+    'booth': BASEURL,
+    'census': BASEURL,
+    'mixnet': BASEURL,
+    'postproc': BASEURL,
+    'store': BASEURL,
+    'visualizer': BASEURL,
+    'voting': BASEURL,
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -109,9 +121,9 @@ WSGI_APPLICATION = 'decide.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'ultra',
-        'USER': 'ultra',
-        'PASSWORD': '12345',
+        'NAME': 'decide',
+        'USER': 'decide',
+        'PASSWORD': 'decide',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -157,6 +169,16 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = '465'
+EMAIL_HOST_USER = 'decide123456789@gmail.com'
+EMAIL_HOST_PASSWORD= 'DecideAdmin97'
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+
+
 
 # number of bits for the key, all auths should use the same number of bits
 KEYBITS = 256

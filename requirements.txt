@@ -12,3 +12,4 @@ jsonnet==0.12.1
 selenium
 
 
+python-telegram-bot
