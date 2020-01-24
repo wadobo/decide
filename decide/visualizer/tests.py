@@ -33,10 +33,10 @@ def voting_id_is_positive():
 
 
 ''' Descomentar para probar las pruebas que aparecen acontinuación
-'''
+
 voting_id_is_positive()
 
-
+'''
 
 
 
