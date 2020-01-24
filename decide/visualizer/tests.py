@@ -19,7 +19,7 @@ def voting_id_is_positive():
 	'''
 	votingID = input('Qué votación se esta examinando : ')
 
-	driver = webdriver.Chrome('/Users/antonio/Desktop/chromedriver')
+	driver = webdriver.Chrome('./chromedriver')
 	driver.get("http://localhost:8000/visualizer/" + votingID)
 	element = driver.find_element_by_id("votingID")
 
@@ -29,12 +29,13 @@ def voting_id_is_positive():
 	#print(numbers)
 
 	verification = float(numbers[0]) > 0
-	print('Prueba superada ? : ' + str(verification))
+	print('Criterio para el id superado : ' + str(verification))
 
 
 ''' Descomentar para probar las pruebas que aparecen acontinuación
-voting_id_is_positive()
 '''
+voting_id_is_positive()
+
 
 
 
