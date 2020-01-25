@@ -9,6 +9,8 @@ import requests
 import unittest
 import re
 import math
+import os
+import time
 
 
 
@@ -50,7 +52,7 @@ def testPDFCSV():
   	"safebrowsing.enabled": True
 	})
 
-	driver = Chrome(executable_path="./chromedriver", 
+	driver = Chrome(executable_path="./chromedriver_ubuntu", 
 	options=options)
 
 
@@ -60,8 +62,16 @@ def testPDFCSV():
 	btnPdf = driver.find_element_by_id('pdf').click()
 	btnCsv = driver.find_element_by_id('csv').click()
 
+	time_to_wait = 10
+	time_counter = 0
+	while not os.path.exists("/home/rog0d/Escritorio"):
+		time.sleep(1)
+		time_counter += 1
+		if time_counter > time_to_wait:break
+	print("descargas realizadas")
 
-#testPDFCSV()
+
+testPDFCSV()
 
 
 
