@@ -2,7 +2,9 @@
 # Create your tests here.
 from django.test import TestCase
 from selenium import webdriver
+from selenium.webdriver import Chrome
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.chrome.options import Options
 import requests
 import unittest
 import re
@@ -37,6 +39,29 @@ def voting_id_is_positive():
 voting_id_is_positive()
 
 '''
+
+def testPDFCSV():
+
+	options = Options()
+	options.add_experimental_option("prefs", {
+  	"download.default_directory": r"/home/rog0d/Escritorio",
+ 	 "download.prompt_for_download": False,
+  	"download.directory_upgrade": True,
+  	"safebrowsing.enabled": True
+	})
+
+	driver = Chrome(executable_path="./chromedriver", 
+	options=options)
+
+
+	Vid = input('ID de la votación a probar: ')
+	driver.get("http://localhost:8000/visualizer/"+Vid)
+	
+	btnPdf = driver.find_element_by_id('pdf').click()
+	btnCsv = driver.find_element_by_id('csv').click()
+
+
+#testPDFCSV()
 
 
 
