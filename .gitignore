@@ -53,7 +53,14 @@ coverage.xml
 # Django stuff:
 *.log
 local_settings.py
+<<<<<<< HEAD
+.idea
+=======
+Pipfile
+.idea
+.idea/misc.xml
 
+>>>>>>> master
 # Flask stuff:
 instance/
 .webassets-cache
@@ -87,6 +94,7 @@ celerybeat-schedule
 venv/
 ENV/
 Pipfile
+
 
 # Spyder project settings
 .spyderproject
