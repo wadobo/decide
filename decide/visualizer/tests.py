@@ -7,10 +7,9 @@ import requests
 import unittest
 import re
 import math
-import os.path
+import os
+import time
 
-my_path = os.path.abspath(os.path.dirname(__file__))
-path = os.path.join(my_path, "chromedriver_ubuntu")
 
 
 
@@ -23,7 +22,7 @@ def voting_id_is_positive():
 	
 	votingID = input('Qué votación se esta examinando : ')
 
-	driver = webdriver.Chrome(path)
+	driver = webdriver.Chrome(executable_path="./chromedriver_ubuntu")
 	driver.get("http://localhost:8000/visualizer/" + votingID)
 	element = driver.find_element_by_id("votingID")
 
@@ -37,7 +36,7 @@ def voting_id_is_positive():
 
 def test_enviar_email_correcto():
 
-        driver = webdriver.Chrome(path)
+        driver = webdriver.Chrome(executable_path="./chromedriver_ubuntu")
 
         driver.get("http://127.0.0.1:8000/visualizer/1/")
 
@@ -55,7 +54,7 @@ def test_enviar_email_correcto():
 
 def test_enviar_email_mal():
 
-        driver = webdriver.Chrome(path)
+        driver = webdriver.Chrome(executable_path="./chromedriver_ubuntu")
 
         driver.get("http://127.0.0.1:8000/visualizer/1/")
 
