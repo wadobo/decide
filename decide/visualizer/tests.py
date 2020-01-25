@@ -43,7 +43,8 @@ voting_id_is_positive()
 '''
 
 def testPDFCSV():
-
+	
+	#Opciones para la descarga
 	options = Options()
 	options.add_experimental_option("prefs", {
   	"download.default_directory": r"/home/rog0d/Escritorio",
@@ -59,9 +60,11 @@ def testPDFCSV():
 	Vid = input('ID de la votación a probar: ')
 	driver.get("http://localhost:8000/visualizer/"+Vid)
 	
+	#busqueda y click de los botones
 	btnPdf = driver.find_element_by_id('pdf').click()
 	btnCsv = driver.find_element_by_id('csv').click()
-
+	
+	#Contador para las descargas
 	time_to_wait = 10
 	time_counter = 0
 	while not os.path.exists("/home/rog0d/Escritorio"):
@@ -71,7 +74,7 @@ def testPDFCSV():
 	print("descargas realizadas")
 
 
-testPDFCSV()
+#testPDFCSV()
 
 
 
