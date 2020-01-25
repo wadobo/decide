@@ -33,7 +33,7 @@ def voting_id_is_positive():
 
 def test_enviar_email_correcto():
 
-        driver = webdriver.Chrome('/home/domin/Escritorio/GITHUB OTRA RAMA/Decide-Zapdos-Visualizacion/decide/visualizer/chromedriver_ubuntu')
+        driver = webdriver.Chrome('./decide/visualizer/chromedriver_ubuntu')
 
         driver.get("http://127.0.0.1:8000/visualizer/1/")
 
@@ -51,7 +51,7 @@ def test_enviar_email_correcto():
 
 def test_enviar_email_mal():
 
-        driver = webdriver.Chrome('/home/domin/Escritorio/GITHUB OTRA RAMA/Decide-Zapdos-Visualizacion/decide/visualizer/chromedriver_ubuntu')
+        driver = webdriver.Chrome('./decide/visualizer/chromedriver_ubuntu')
 
         driver.get("http://127.0.0.1:8000/visualizer/1/")
 
