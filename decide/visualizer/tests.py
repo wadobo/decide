@@ -74,7 +74,49 @@ def pruebaPDFCSV():
 	print("descargas realizadas")
 
 
+
+def prueba_enviar_email_correcto():
+
+        driver = webdriver.Chrome(executable_path="./chromedriver_ubuntu")
+
+        driver.get("http://127.0.0.1:8000/visualizer/1/")
+
+        driver.find_element_by_xpath('/html/body/div/section/div[2]/div[3]/form/input[2]').send_keys("decide123456789@gmail.com")
+
+        driver.find_element_by_xpath('/html/body/div/section/div[2]/div[3]/form/input[3]').click()
+        
+        verification = str(driver.find_element_by_xpath('/html/body/div/section/div[2]/ul/li/div').text).startswith('El email ha sido enviado!')
+
+        print('Criterio para test_enviar_email_correcto : ' + str(verification)) 
+
+        driver.close()
+
+        driver.quit()
+
+def prueba_enviar_email_mal():
+
+        driver = webdriver.Chrome(executable_path="./chromedriver_ubuntu")
+
+        driver.get("http://127.0.0.1:8000/visualizer/1/")
+
+        driver.find_element_by_xpath('/html/body/div/section/div[2]/div[3]/form/input[2]').send_keys("emailmal.com")
+
+        driver.find_element_by_xpath('/html/body/div/section/div[2]/div[3]/form/input[3]').click()
+        
+        verification = driver.find_elements_by_xpath('/html/body/div/section/div[2]/ul/li/div').count('El email ha sido enviado!') is 0
+
+        print('Criterio para test_enviar_email_mal : ' + str(verification)) 
+
+
+        driver.close()
+
+        driver.quit()
+
+
 #testPDFCSV()
+#prueba_enviar_email_correcto()
+#prueba_enviar_email_mal()
+
 
 
 
