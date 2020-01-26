@@ -72,12 +72,11 @@ def test_enviar_email_mal():
 
         print('Criterio para test_enviar_email_mal : ' + str(verification)) 
 
-''' Descomentar para probar las pruebas que aparecen acontinuación'''
-
-#voting_id_is_positive()
-#test_enviar_email_correcto()
-#test_enviar_email_mal()
-
+''' Descomentar para probar las pruebas que aparecen acontinuación
+voting_id_is_positive()
+test_enviar_email_correcto()
+test_enviar_email_mal()
+'''
 
 
 
