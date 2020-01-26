@@ -53,7 +53,7 @@ def pruebaPDFCSV():
   	"safebrowsing.enabled": True
 	})
 
-	driver = Chrome(executable_path=".chromedriver_ubuntu", 
+	driver = Chrome(executable_path="./chromedriver_ubuntu", 
 	options=options)
 
 
