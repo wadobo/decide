@@ -1,5 +1,5 @@
-#import telegram.ext
-#import telegram
+import telegram.ext
+import telegram
 import json
 from django.views.generic import TemplateView
 from django.conf import settings
@@ -28,17 +28,25 @@ class VisualizerView(TemplateView):
             context['voting2'] = hola
             listaVotaciones = from_json(hola) 
 
-            #aux=ResultadosVotacion2.from_json2(json,dumps(r[0]))
-            #preguntaVotacion = str(aux.question)
+            aux=ResultadosVotacion2.from_json2(json.dumps(r[0])).question['desc']
+            
             
 
             i=0
             votos=0 
-            #stringResultados="Resultados de la encuesta: "+preguntaVotacion+""
+            stringResultados="Resultados de la encuesta: '"+aux+"' \n "
 
+            k=0
+            while k < len(listaVotaciones) :
+                stringResultados= stringResultados + "Opción: "+str(listaVotaciones[k].option)+"\n"+"  Votos: "+str(listaVotaciones[k].votes)+"\n"
+            
+                k=k+1
+                
+                
+            
+            bot = telegram.bot.Bot(token='939132779:AAH_1-kNBHGx_tOZxMtF8JjmdixHEaDLpLw')
+            bot.sendMessage(chat_id="@decidezapdos", text=""+stringResultados+"")
 
-            #while k < len(listaVotaciones) :
-                #stringResultados= stringResultados + "Opción "+listaVotaciones[i].option+"  Votos: "+listaVotaciones[i].votes+""
 
             while i < len(listaVotaciones) :
                 votos= votos + listaVotaciones[i].votes
@@ -53,8 +61,7 @@ class VisualizerView(TemplateView):
             context['prueba'] = listMedia
             context['contador'] = votos 
 
-            #bot = telegram.bot.Bot(token='939132779:AAH_1-kNBHGx_tOZxMtF8JjmdixHEaDLpLw')
-            #bot.sendMessage(text="hola")
+            
 
 
 
