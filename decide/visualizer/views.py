@@ -26,14 +26,14 @@ class VisualizerView(TemplateView):
             hola= str(ResultadosVotacion2.from_json2(json.dumps(r[0])))
             hola = hola.replace("'", "\"")
             context['voting2'] = hola
-            listaVotaciones = from_json(hola) 
+            listaVotaciones = from_json(hola)
 
             aux=ResultadosVotacion2.from_json2(json.dumps(r[0])).question['desc']
             
             
 
             i=0
-            votos=0 
+            votos=0
             stringResultados="Resultados de la encuesta: '"+aux+"' \n "
 
             k=0
@@ -59,7 +59,7 @@ class VisualizerView(TemplateView):
                 listMedia.append(media)
                 j=j+1
             context['prueba'] = listMedia
-            context['contador'] = votos 
+            context['contador'] = votos
 
             
 
@@ -156,7 +156,7 @@ class ResultadosVotacion2:
         
         votaciones_data = json.loads(json_string)
         
-        return cls(**votaciones_data) 
+        return cls(**votaciones_data)
 
     
 
