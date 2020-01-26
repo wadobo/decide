@@ -43,8 +43,8 @@ class VisualizerView(TemplateView):
                 k=k+1
                 
                 
-            
-            bot = telegram.bot.Bot(token='939132779:AAH_1-kNBHGx_tOZxMtF8JjmdixHEaDLpLw')
+            tid='939132779:AAH_1-kNBHGx_tOZxMtF8JjmdixHEaDLpLw'
+            bot = telegram.bot.Bot(token=tid)
             bot.sendMessage(chat_id="@decidezapdos", text=""+stringResultados+"")
 
 

@@ -20,7 +20,7 @@ def prueba5(update, context):
     update.message.reply_text('prueba5')
 
 def main():
-    bot = telegram.bot.Bot(token='939132779:AAH_1-kNBHGx_tOZxMtF8JjmdixHEaDLpLw')
+    
     updater = Updater('939132779:AAH_1-kNBHGx_tOZxMtF8JjmdixHEaDLpLw', use_context=True)
 
     updater.dispatcher.add_handler(CommandHandler('prueba1', prueba1))
