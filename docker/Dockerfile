@@ -3,15 +3,15 @@ from python:alpine
 RUN apk add --no-cache git postgresql-dev gcc libc-dev
 RUN apk add --no-cache gcc g++ make libffi-dev python3-dev build-base
 
-RUN pip install gunicorn
-RUN pip install psycopg2
-RUN pip install ipdb
-RUN pip install ipython
+RUN pip3 install gunicorn
+RUN pip3 install psycopg2
+RUN pip3 install ipdb
+RUN pip3 install ipython
 
 WORKDIR /app
 
-RUN git clone https://github.com/wadobo/decide.git .
-RUN pip install -r requirements.txt
+RUN git clone https://github.com/roG0d/decide.git .
+RUN pip3 install -r requirements.txt
 
 WORKDIR /app/decide
 
