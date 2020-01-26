@@ -34,13 +34,11 @@ def voting_id_is_positive():
 	verification = float(numbers[0]) > 0
 	print('Criterio para el id superado : ' + str(verification))
 
-def test_enviar_email_correcto():
-
-        votingID = input('Qué votación se esta examinando : ')
+def prueba_enviar_email_correcto():
 
         driver = webdriver.Chrome(executable_path="./chromedriver_ubuntu")
 
-        driver.get("http://127.0.0.1:8000/visualizer/" + votingID)
+        driver.get("http://127.0.0.1:8000/visualizer/1/")
 
         driver.find_element_by_xpath('/html/body/div/section/div[2]/div[3]/form/input[2]').send_keys("decide123456789@gmail.com")
 
@@ -54,13 +52,11 @@ def test_enviar_email_correcto():
 
         driver.quit()
 
-def test_enviar_email_mal():
-
-        votingID = input('Qué votación se esta examinando : ')
+def prueba_enviar_email_mal():
 
         driver = webdriver.Chrome(executable_path="./chromedriver_ubuntu")
 
-        driver.get("http://127.0.0.1:8000/visualizer/" + votingID)
+        driver.get("http://127.0.0.1:8000/visualizer/1/")
 
         driver.find_element_by_xpath('/html/body/div/section/div[2]/div[3]/form/input[2]').send_keys("emailmal.com")
 
@@ -78,8 +74,8 @@ def test_enviar_email_mal():
 
 ''' Descomentar para probar las pruebas que aparecen acontinuación
 voting_id_is_positive()
-test_enviar_email_correcto()
-test_enviar_email_mal()
+#test_enviar_email_correcto()
+#test_enviar_email_mal()
 '''
 
 
