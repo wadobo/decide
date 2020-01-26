@@ -53,7 +53,7 @@ def pruebaPDFCSV():
   	"safebrowsing.enabled": True
 	})
 
-	driver = Chrome(executable_path=".chromedriver_ubuntu", 
+	driver = Chrome(executable_path="./chromedriver_ubuntu", 
 	options=options)
 
 
@@ -113,7 +113,7 @@ def prueba_enviar_email_mal():
         driver.quit()
 
 
-#testPDFCSV()
+#pruebaPDFCSV()
 #prueba_enviar_email_correcto()
 #prueba_enviar_email_mal()
 
