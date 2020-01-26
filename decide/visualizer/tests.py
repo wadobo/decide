@@ -42,7 +42,7 @@ voting_id_is_positive()
 
 '''
 
-def testPDFCSV():
+def pruebaPDFCSV():
 	
 	#Opciones para la descarga
 	options = Options()
