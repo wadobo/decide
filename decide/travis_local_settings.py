@@ -31,8 +31,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'postgres',
-        'USER': 'decide',
-        'PASSWORD':'decide',
+        'USER': 'postgres',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -40,3 +39,4 @@ DATABASES = {
 
 # number of bits for the key, all auths should use the same number of bits
 KEYBITS = 256
+
