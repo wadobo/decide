@@ -76,7 +76,7 @@ def test_enviar_email_mal():
 
 #voting_id_is_positive()
 #test_enviar_email_correcto()
-test_enviar_email_mal()
+#test_enviar_email_mal()
 
 
 
