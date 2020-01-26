@@ -2,11 +2,15 @@
 # Create your tests here.
 from django.test import TestCase
 from selenium import webdriver
+from selenium.webdriver import Chrome
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.chrome.options import Options
 import requests
 import unittest
 import re
 import math
+import os
+import time
 
 
 
@@ -37,6 +41,40 @@ def voting_id_is_positive():
 voting_id_is_positive()
 
 '''
+
+def pruebaPDFCSV():
+	
+	#Opciones para la descarga
+	options = Options()
+	options.add_experimental_option("prefs", {
+  	"download.default_directory": r"/home/rog0d/Escritorio",
+ 	 "download.prompt_for_download": False,
+  	"download.directory_upgrade": True,
+  	"safebrowsing.enabled": True
+	})
+
+	driver = Chrome(executable_path=".chromedriver_ubuntu", 
+	options=options)
+
+
+	Vid = input('ID de la votación a probar: ')
+	driver.get("http://localhost:8000/visualizer/"+Vid)
+	
+	#busqueda y click de los botones
+	btnPdf = driver.find_element_by_id('pdf').click()
+	btnCsv = driver.find_element_by_id('csv').click()
+	
+	#Contador para las descargas
+	time_to_wait = 10
+	time_counter = 0
+	while not os.path.exists("/home/rog0d/Escritorio"):
+		time.sleep(1)
+		time_counter += 1
+		if time_counter > time_to_wait:break
+	print("descargas realizadas")
+
+
+#testPDFCSV()
 
 
 
