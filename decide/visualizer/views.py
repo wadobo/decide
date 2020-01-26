@@ -1,3 +1,5 @@
+import telegram.ext
+import telegram
 import json
 from django.views.generic import TemplateView
 from django.conf import settings
@@ -26,8 +28,26 @@ class VisualizerView(TemplateView):
             context['voting2'] = hola
             listaVotaciones = from_json(hola)
 
+            aux=ResultadosVotacion2.from_json2(json.dumps(r[0])).question['desc']
+            
+            
+
             i=0
             votos=0
+            stringResultados="Resultados de la encuesta: '"+aux+"' \n "
+
+            k=0
+            while k < len(listaVotaciones) :
+                stringResultados= stringResultados + "Opción: "+str(listaVotaciones[k].option)+"\n"+"  Votos: "+str(listaVotaciones[k].votes)+"\n"
+            
+                k=k+1
+                
+                
+            tid='939132779:AAH_1-kNBHGx_tOZxMtF8JjmdixHEaDLpLw'
+            bot = telegram.bot.Bot(token=tid)
+            bot.sendMessage(chat_id="@decidezapdos", text=""+stringResultados+"")
+
+
             while i < len(listaVotaciones) :
                 votos= votos + listaVotaciones[i].votes
                 i=i+1
@@ -40,6 +60,12 @@ class VisualizerView(TemplateView):
                 j=j+1
             context['prueba'] = listMedia
             context['contador'] = votos
+
+            
+
+
+
+
         except:
             raise Http404
 
@@ -130,4 +156,8 @@ class ResultadosVotacion2:
         
         votaciones_data = json.loads(json_string)
         
-        return cls(**votaciones_data) 
+        return cls(**votaciones_data)
+
+    
+
+
