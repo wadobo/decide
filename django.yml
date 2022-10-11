@@ -1,0 +1,49 @@
+name: Python application
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:10.8
+        env:
+          POSTGRES_USER: decide
+          POSTGRES_PASSWORD: decide
+          POSTGRES_DB: decide
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: psycopg2 prerequisites
+      run: sudo apt-get install libpq-dev
+    - name: Install dependencies and config
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install codacy-coverage
+        cp decide/local_settings.gactions.py decide/local_settings.py
+    - name: Run migrations (unnecessary)
+      run: |
+        cd decide
+        python manage.py migrate
+    - name: Run tests
+      run: |
+        cd decide
+        coverage run --branch --source=. ./manage.py test  --keepdb 
+        coverage xml 
+    - name: Codacy Coverage Reporter
+      uses: codacy/codacy-coverage-reporter-action@v1
+      with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: decide/coverage.xml 
