@@ -3,7 +3,7 @@ pycryptodome==3.6.6
 djangorestframework==3.9.1
 django-cors-headers==2.1.0
 requests==2.20.0
-django-filter==1.1.0
+django-filter==2.4.0
 psycopg2-binary==2.8.6
 django-rest-swagger==2.2.0
 coverage==4.5.2
