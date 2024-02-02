@@ -1,5 +1,5 @@
 Django==2.0.12
-pycryptodome==3.6.6
+pycryptodome==3.19.1
 djangorestframework==3.9.1
 django-cors-headers==2.1.0
 requests==2.20.0
